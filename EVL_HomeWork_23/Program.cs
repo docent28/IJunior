@@ -30,7 +30,7 @@ namespace EVL_HomeWork_23
                 Console.Write(arrayNumbers[i] + " ");
             }
 
-            Shuffle(ref arrayNumbers);
+            Shuffle(arrayNumbers);
 
             Console.WriteLine("\n");
             Console.WriteLine("Перемешанный массив:");
@@ -41,7 +41,7 @@ namespace EVL_HomeWork_23
             Console.WriteLine("\n");
         }
 
-        static void Shuffle(ref int[] arrayNumbers)
+        static void Shuffle(int[] arrayNumbers)
         {
             Random rand = new Random();
             for (int i = arrayNumbers.Length - 1; i >= 1; i--)
