@@ -31,16 +31,16 @@ namespace EVL_HomeWork_19
                 switch (menuItem)
                 {
                     case "1":
-                        addDossier(ref fullName, ref position);
+                        AddDossier(ref fullName, ref position);
                         break;
                     case "2":
-                        outputDossier(fullName, position);
+                        SnowDossier(fullName, position);
                         break;
                     case "3":
-                        deletingDossier(ref fullName, ref position);
+                        DeleteDossier(ref fullName, ref position);
                         break;
                     case "4":
-                        searchSurname(ref fullName, ref position);
+                        SearchLastName(fullName, position);
                         break;
                     case "5":
                         exit = true;
@@ -56,37 +56,30 @@ namespace EVL_HomeWork_19
                 }
             }
         }
-        static void addDossier(ref string[] fullName, ref string[] position)
+
+        static void AddDossier(ref string[] fullName, ref string[] position)
         {
             string strEntered;
-            string[] tempArray = new string[fullName.Length + 1];
-            for (int i = 0; i < fullName.Length; i++)
-            {
-                tempArray[i] = fullName[i];
-            }
+
+            IncreaseArraySize(ref fullName, 1);
 
             Console.WriteLine("Добавление досье:");
             Console.WriteLine();
             Console.Write("Введите фамилию: ");
             strEntered = Console.ReadLine();
-            tempArray[tempArray.Length - 1] += strEntered + " ";
+            fullName[fullName.Length - 1] += strEntered + " ";
             Console.Write("Введите имя: ");
             strEntered = Console.ReadLine();
-            tempArray[tempArray.Length - 1] += strEntered + " ";
+            fullName[fullName.Length - 1] += strEntered + " ";
             Console.Write("Введите отчество: ");
             strEntered = Console.ReadLine();
-            tempArray[tempArray.Length - 1] += strEntered;
-            fullName = tempArray;
+            fullName[fullName.Length - 1] += strEntered;
+
+            IncreaseArraySize(ref position, 1);
 
             Console.Write("Введите должность: ");
             strEntered = Console.ReadLine();
-            tempArray = new string[position.Length + 1];
-            for (int i = 0; i < position.Length; i++)
-            {
-                tempArray[i] = position[i];
-            }
-            tempArray[tempArray.Length - 1] = strEntered;
-            position = tempArray;
+            position[position.Length - 1] = strEntered;
 
             Console.WriteLine();
             Console.WriteLine("Данные занесены успешно!!!");
@@ -96,7 +89,7 @@ namespace EVL_HomeWork_19
             Console.Clear();
         }
 
-        static void outputDossier(string[] fullName, string[] position)
+        static void SnowDossier(string[] fullName, string[] position)
         {
             if (fullName.Length != 0)
             {
@@ -116,37 +109,21 @@ namespace EVL_HomeWork_19
             Console.Clear();
         }
 
-        static void deletingDossier(ref string[] fullname, ref string[] position)
+        static void DeleteDossier(ref string[] fullname, ref string[] position)
         {
             string strEntered;
             int dossierNumber;
-            int orderOffset = 0;
 
             if (fullname.Length != 0)
             {
-                string[] tempArrayFullName = new string[fullname.Length - 1];
-                string[] tempArrayPosition = new string[position.Length - 1];
                 Console.Write("Введите номер досье для удаления: ");
                 strEntered = Console.ReadLine();
                 if (int.TryParse(strEntered, out dossierNumber))
                 {
                     if (dossierNumber <= fullname.Length && dossierNumber >= 1)
                     {
-                        for (int i = 0; i < fullname.Length; i++)
-                        {
-                            if (i + 1 != dossierNumber)
-                            {
-                                tempArrayFullName[i + orderOffset] = fullname[i];
-                                tempArrayPosition[i + orderOffset] = position[i];
-                            }
-                            else
-                            {
-                                orderOffset = -1;
-                                continue;
-                            }
-                        }
-                        fullname = tempArrayFullName;
-                        position = tempArrayPosition;
+                        DeleteArrayItem(ref fullname, dossierNumber);
+                        DeleteArrayItem(ref position, dossierNumber);
 
                         Console.WriteLine("Досье удалено успешно!!!");
                     }
@@ -170,7 +147,7 @@ namespace EVL_HomeWork_19
             Console.Clear();
         }
 
-        static void searchSurname(ref string[] fullName, ref string[] position)
+        static void SearchLastName(string[] fullName, string[] position)
         {
             string strEntered;
             int numberMatches = 0;
@@ -204,6 +181,36 @@ namespace EVL_HomeWork_19
             Console.WriteLine("Нажмите любую клавишу...");
             Console.ReadKey();
             Console.Clear();
+        }
+
+        static void IncreaseArraySize(ref string[] expandableArray, int sizeIncrease)
+        {
+            string[] tempArray = new string[expandableArray.Length + sizeIncrease];
+            for (int i = 0; i < expandableArray.Length; i++)
+            {
+                tempArray[i] = expandableArray[i];
+            }
+            expandableArray = tempArray;
+        }
+
+        static void DeleteArrayItem(ref string[] compressibleArray, int itemDelete)
+        {
+            string[] tempArray = new string[compressibleArray.Length - 1];
+            int orderOffset = 0;
+
+            for (int i = 0; i < compressibleArray.Length; i++)
+            {
+                if (i + 1 != itemDelete)
+                {
+                    tempArray[i + orderOffset] = compressibleArray[i];
+                }
+                else
+                {
+                    orderOffset = -1;
+                    continue;
+                }
+            }
+            compressibleArray = tempArray;
         }
     }
 }

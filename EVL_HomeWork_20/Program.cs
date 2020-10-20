@@ -16,32 +16,34 @@ namespace EVL_HomeWork_20
             int maxValue;
 
             Console.Write("Введите максимальную длину бара (не менее 10 и не более 50): ");
-            maxValue = numberRange(10, 50);
+            maxValue = DefineBorders(10, 50);
 
             Console.Write("Введите наполненность бара (в %) (не менее 1 и не более 100): ");
-            percent = numberRange(1, 100);
+            percent = DefineBorders(1, 100);
 
             Console.Write("Введите позицию по вертикали (не менее 5 и не более 20): ");
-            positionY = numberRange(5, 20);
+            positionY = DefineBorders(5, 20);
 
             Console.Write("Введите позицию по горизонтали (не менее 0 и не более 20): ");
-            positionX = numberRange(0, 20);
+            positionX = DefineBorders(0, 20);
 
-            drawBar(maxValue, percent, positionX, positionY);
+            DrawBar(maxValue, percent, positionX, positionY);
             Console.WriteLine();
         }
 
-        static void drawBar(int maxValue, int percent, int positionX, int positionY)
+        static void DrawBar(int maxValue, int percent, int positionX, int positionY)
         {
             ConsoleColor defaultColor = Console.BackgroundColor;
             string bar = "";
+            int restriction;
 
             Console.CursorVisible = false;
             Console.SetCursorPosition(positionX, positionY);
             Console.Write("[");
             Console.BackgroundColor = ConsoleColor.Red;
 
-            for (int i = 0; i < Math.Round(Convert.ToDecimal(maxValue) / 100M * percent); i++)
+            restriction = Convert.ToInt32(Math.Round(Convert.ToDecimal(maxValue) / 100M * percent));
+            for (int i = 0; i < restriction; i++)
             {
                 bar += " ";
             }
@@ -50,7 +52,8 @@ namespace EVL_HomeWork_20
             bar = "";
             Console.BackgroundColor = defaultColor;
 
-            for (int i = Convert.ToInt32(Math.Round(Convert.ToDecimal(maxValue) / 100M * percent)); i < maxValue; i++)
+            restriction = Convert.ToInt32(Math.Round(Convert.ToDecimal(maxValue) / 100M * percent));
+            for (int i = restriction; i < maxValue; i++)
             {
                 bar += "_";
             }
@@ -59,7 +62,7 @@ namespace EVL_HomeWork_20
             Console.Write("]");
         }
 
-        static int numberRange(int minValue, int maxValue)
+        static int DefineBorders(int minValue, int maxValue)
         {
             bool exit = false;
             int value = -1;

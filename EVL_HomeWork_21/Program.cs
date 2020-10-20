@@ -10,11 +10,11 @@ namespace EVL_HomeWork_21
     {
         static void Main(string[] args)
         {
-            Console.WriteLine($"Вы ввели целое число со значением: {enteringInteger()}");
+            Console.WriteLine($"Вы ввели целое число со значением: {ChecksInputNumber()}");
             Console.WriteLine();
 
         }
-        static int enteringInteger()
+        static int ChecksInputNumber()
         {
             string lineEntered = "";
             bool exit = false;
