@@ -52,7 +52,6 @@ namespace EVL_HomeWork_20
             bar = "";
             Console.BackgroundColor = defaultColor;
 
-            restriction = Convert.ToInt32(Math.Round(Convert.ToDecimal(maxValue) / 100M * percent));
             for (int i = restriction; i < maxValue; i++)
             {
                 bar += "_";
