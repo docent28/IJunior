@@ -17,7 +17,7 @@ namespace EVL_HomeWork_22
             int performerX, performerY;
             int performerDX = 0, performerDY = 0;
             int totalMoves = 0;
-            string correctRoute="";
+            string correctRoute = "";
             Console.CursorVisible = false;
             char[,] map = ReadMap("level01", out performerX, out performerY);
 
@@ -31,7 +31,7 @@ namespace EVL_HomeWork_22
 
                 if (key.Key == ConsoleKey.Escape)
                 {
-                    Console.SetCursorPosition(5, 32);
+                    Console.SetCursorPosition(35, 17);
                     Console.WriteLine("Игра закончена");
                     Console.WriteLine();
                     isPlaying = false;
@@ -43,7 +43,8 @@ namespace EVL_HomeWork_22
                         "WWWWWWWDSSSSSSSDWDSDWWAAWDWAWDDSSDSSSDDDWAAWD" +
                         "DWAAWAWDDSDWWAAAAAAWWWWWWDSSSSSDWWWWWDSSSSSDD" +
                         "WAWDWAWWDSDWDSSASDSASDSSSSSSSSAAA";
-                    PassCorrectly(correctRoute);
+                    PassCorrectly(map, correctRoute, ref performerX, ref performerY, ref performerDX, ref performerDY, ref totalMoves);
+                    isPlaying = false;
                 }
                 else
                 {
@@ -61,13 +62,33 @@ namespace EVL_HomeWork_22
             Console.SetCursorPosition(35, 19);
         }
 
-        static void PassCorrectly(string correctRoute)
+        static void PassCorrectly(char[,] map, string correctRoute, ref int performerX, ref int performerY, ref int DX, ref int DY, ref int totalMoves)
         {
-            ConsoleKey key;
-            key = ConsoleKey.UpArrow;
-            if (key== ConsoleKey.UpArrow)
+            bool repeatedVisit = false;
+
+            for (int i = 0; i < correctRoute.Length; i++)
             {
-                Console.WriteLine("1111111124321412342134");
+                switch (correctRoute[i])
+                {
+                    case 'A':
+                        DX = 0;
+                        DY = -2;
+                        break;
+                    case 'S':
+                        DX = 2;
+                        DY = 0;
+                        break;
+                    case 'D':
+                        DX = 0;
+                        DY = 2;
+                        break;
+                    case 'W':
+                        DX = -2;
+                        DY = 0;
+                        break;
+                }
+                repeatedVisit = MovePerformer(map, ref performerX, ref performerY, DX, DY, ref totalMoves);
+                System.Threading.Thread.Sleep(200);
             }
         }
 
@@ -124,7 +145,7 @@ namespace EVL_HomeWork_22
 
                     totalMoves++;
                     Console.SetCursorPosition(10, 32);
-                    Console.WriteLine($"Осталось ходов - {202 - totalMoves} из 202");
+                    Console.WriteLine($"Осталось ходов - {Convert.ToString(202 - totalMoves),3:N0} из 202");
                     return false;
                 }
                 else
