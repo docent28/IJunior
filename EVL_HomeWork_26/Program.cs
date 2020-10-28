@@ -34,7 +34,6 @@ namespace EVL_HomeWork_26
                         Console.WriteLine();
                         Console.Write("Сумма всех введенных чисел равна: " + sumNumbers);
                         Console.WriteLine();
-                        sumNumbers = 0;
                         Console.WriteLine();
                         break;
                     case "exit":
