@@ -14,7 +14,7 @@ namespace EVL_HomeWork_24
             bool exit = false;
             Dictionary<string, string> wordsExplanations = new Dictionary<string, string>();
 
-            wordsExplanations = FillDictionary(wordsExplanations);
+            FillDictionary(wordsExplanations);
 
             while (!exit)
             {
@@ -62,7 +62,7 @@ namespace EVL_HomeWork_24
             Console.Clear();
         }
 
-        static Dictionary<string, string> FillDictionary(Dictionary<string, string> concepts)
+        static void FillDictionary(Dictionary<string, string> concepts)
         {
             string words;
             string explanations;
@@ -94,8 +94,6 @@ namespace EVL_HomeWork_24
             explanations = "Малоопытный пользователь, человек, который не умеет целесообразно" +
                 " пользоваться персональным компьютером в нужном для него объёме";
             concepts.Add(words, explanations);
-
-            return concepts;
         }
     }
 }

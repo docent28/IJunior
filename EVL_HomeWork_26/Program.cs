@@ -13,7 +13,7 @@ namespace EVL_HomeWork_26
             bool endInput = false;
             string enteredData;
             List<double> numbers = new List<double>();
-            double sumNumbers = 0;
+            double sumNumbers;
             double anotherNumber;
 
             Console.WriteLine("ИНСТРУКЦИЯ");

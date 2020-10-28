@@ -30,7 +30,7 @@ namespace EVL_HomeWork_27
                 switch (menuItem)
                 {
                     case "1":
-                        AddDossier(ref fullName, ref position);
+                        AddDossier(fullName, position);
                         break;
                     case "2":
                         SnowDossier(fullName, position);
@@ -53,7 +53,7 @@ namespace EVL_HomeWork_27
             }
         }
 
-        static void AddDossier(ref List<string> fullName, ref List<string> position)
+        static void AddDossier(List<string> fullName, List<string> position)
         {
             string strEntered;
             int dossierNumber = 0;

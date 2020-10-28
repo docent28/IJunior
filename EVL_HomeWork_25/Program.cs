@@ -11,7 +11,6 @@ namespace EVL_HomeWork_25
         static void Main(string[] args)
         {
             int totalAmount = 0;
-            int numberBay = 0;
             int totalBayers;
             Random sum = new Random();
             Queue<int> purchaseAmount = new Queue<int>();
@@ -27,12 +26,11 @@ namespace EVL_HomeWork_25
             {
                 Console.WriteLine($"На счете имеется {totalAmount} рублей.");
                 Console.WriteLine();
-                Console.WriteLine($"Количество обслуженных покупателей: {numberBay}");
+                Console.WriteLine($"Количество обслуженных покупателей: {i}");
                 Console.WriteLine($"Количество покупателей в очереди: {purchaseAmount.Count()}");
                 Console.WriteLine($"У следующего покупателя покупок на сумму {purchaseAmount.Peek()} рублей");
 
                 totalAmount += purchaseAmount.Dequeue();
-                numberBay++;
                 Console.WriteLine();
                 Console.WriteLine("Нажмите любую клавишу, чтобы обслужить следующего покупателя...");
                 Console.ReadKey();
