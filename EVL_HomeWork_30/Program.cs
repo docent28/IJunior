@@ -35,17 +35,17 @@ namespace EVL_HomeWork_30
                     case "2":
                         Console.Write("Введите номер игрока для выдачи бана - ");
                         numberPlayer = Convert.ToInt32(Console.ReadLine());
-                        repoPlayers.BanPlayer(numberPlayer);
+                        repoPlayers.BanUnBan(numberPlayer, true);
                         break;
                     case "3":
                         Console.Write("Введите номер игрока для удаления бана - ");
                         numberPlayer = Convert.ToInt32(Console.ReadLine());
-                        repoPlayers.NoBanPlayer(numberPlayer);
+                        repoPlayers.BanUnBan(numberPlayer, false);
                         break;
                     case "4":
                         Console.Write("Введите номер игрока для удаления - ");
                         numberPlayer = Convert.ToInt32(Console.ReadLine());
-                        repoPlayers.DelPlayer(numberPlayer);
+                        repoPlayers.DeletePlayer(numberPlayer);
                         break;
                     case "5":
                         if (!repoPlayers.CheckQuantity())
@@ -75,26 +75,67 @@ namespace EVL_HomeWork_30
     class Player
     {
         public int Number { get; }
-        public bool Ban { get; set; }
+        private bool _ban;
         private string _nicName;
         private int _level;
+        private Player i;   // не используется
+                            // игроки в лист не заносятся
+
+        public bool IsBan()
+        {
+            return _ban;
+        }
+        public void Ban()
+        {
+            _ban = true;
+        }
+
+        public void UnBan()
+        {
+            _ban = false;
+        }
 
         public Player(int number, string nicName, int level)
         {
             Number = number;
             _nicName = nicName;
             _level = level;
-            Ban = false;
+            _ban = false;
         }
+
+        public Player(Player i)
+        {
+            Number = i.Number;
+            _nicName = i._nicName;
+            _level = i._level;
+            _ban = i.IsBan();
+        }
+
         public void ShowInfo()
         {
-            Console.WriteLine("Игрок № - " + Number + "\tЕго ник - " + _nicName + "\tУровень - " + _level + "\tБан - " + Ban);
+            Console.WriteLine("Игрок № - " + Number + "\tЕго ник - " + _nicName + "\tУровень - " + _level + "\tБан - " + _ban);
         }
     }
 
     class RepoPlayers
     {
-        public List<Player> Players { get; }
+        private List<Player> _players;
+        public List<Player> Players
+        {
+            get
+            {
+                List<Player> tmp = new List<Player>(_players.Count());
+                _players.ForEach((i) =>
+                {
+                    tmp.Add(new Player(i));
+                });
+                return tmp;
+            }
+            private set
+            {
+                _players = value;
+            }
+        }
 
         public RepoPlayers()
         {
@@ -129,7 +170,7 @@ namespace EVL_HomeWork_30
             Console.ReadKey();
         }
 
-        public void DelPlayer(int id)
+        public void DeletePlayer(int id)
         {
             if (CheckQuantity()) return;
 
@@ -150,7 +191,7 @@ namespace EVL_HomeWork_30
             Console.ReadKey();
         }
 
-        public void BanPlayer(int id)
+        public void BanUnBan(int id, bool flag)
         {
             if (CheckQuantity()) return;
 
@@ -160,43 +201,27 @@ namespace EVL_HomeWork_30
             if (isFindPlayer)
             {
                 Player player = Players.Find(findPlayer => findPlayer.Number == id);
-                if (player.Ban)
+                if (player.IsBan() && flag)
                 {
                     Console.WriteLine($"\nИгрок №{id} уже имеет бан");
                 }
-                else
-                {
-                    player.Ban = true;
-                    Console.WriteLine($"\nИгрок №{id} забанен");
-                }
-            }
-            else
-            {
-                Console.WriteLine($"\nИгрок с №{id} отсутствует");
-            }
-            Console.WriteLine("Нажмите любую клавишу...");
-            Console.ReadKey();
-        }
-
-        public void NoBanPlayer(int id)
-        {
-            if (CheckQuantity()) return;
-
-            bool isFindPlayer;
-
-            isFindPlayer = Players.Exists(findPlayer => findPlayer.Number == id);
-            if (isFindPlayer)
-            {
-                Player player = Players.Find(findPlayer => findPlayer.Number == id);
-                if (player.Ban)
-                {
-                    player.Ban = false;
-                    Console.WriteLine($"\nИгрок №{player.Number} разбанен");
-                }
-                else
+                else if (!player.IsBan() && !flag)
                 {
                     Console.WriteLine($"\nИгрок №{player.Number} не забанен");
                 }
+                else
+                {
+                    if (flag)
+                    {
+                        player.Ban();
+                        Console.WriteLine($"\nИгрок №{id} забанен");
+                    }
+                    else
+                    {
+                        player.UnBan();
+                        Console.WriteLine($"\nИгрок №{player.Number} разбанен");
+                    }
+                }
             }
             else
             {
@@ -205,6 +230,62 @@ namespace EVL_HomeWork_30
             Console.WriteLine("Нажмите любую клавишу...");
             Console.ReadKey();
         }
+
+        //public void BanPlayer(int id)
+        //{
+        //    if (CheckQuantity()) return;
+
+        //    bool isFindPlayer;
+
+        //    isFindPlayer = Players.Exists(findPlayer => findPlayer.Number == id);
+        //    if (isFindPlayer)
+        //    {
+        //        Player player = Players.Find(findPlayer => findPlayer.Number == id);
+        //        if (player.IsBan())
+        //        {
+        //            Console.WriteLine($"\nИгрок №{id} уже имеет бан");
+        //        }
+        //        else
+        //        {
+        //            player.Ban();
+        //            Console.WriteLine($"\nИгрок №{id} забанен");
+        //        }
+        //    }
+        //    else
+        //    {
+        //        Console.WriteLine($"\nИгрок с №{id} отсутствует");
+        //    }
+        //    Console.WriteLine("Нажмите любую клавишу...");
+        //    Console.ReadKey();
+        //}
+
+        //public void UnBanPlayer(int id)
+        //{
+        //    if (CheckQuantity()) return;
+
+        //    bool isFindPlayer;
+
+        //    isFindPlayer = Players.Exists(findPlayer => findPlayer.Number == id);
+        //    if (isFindPlayer)
+        //    {
+        //        Player player = Players.Find(findPlayer => findPlayer.Number == id);
+        //        if (player.IsBan())
+        //        {
+        //            player.UnBan();
+        //            Console.WriteLine($"\nИгрок №{player.Number} разбанен");
+        //        }
+        //        else
+        //        {
+        //            Console.WriteLine($"\nИгрок №{player.Number} не забанен");
+        //        }
+        //    }
+        //    else
+        //    {
+        //        Console.WriteLine($"\nИгрок с №{id} отсутствует");
+        //    }
+        //    Console.WriteLine("Нажмите любую клавишу...");
+        //    Console.ReadKey();
+        //}
 
         public bool CheckQuantity()
         {
