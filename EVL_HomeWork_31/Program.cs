@@ -48,8 +48,8 @@ namespace EVL_HomeWork_31
                         }
 
                         Item item = new Item(nameItem, quantityItem, priceItem);
-                        seller.AddItem(item);
-                        Console.Write("\nТовар добавлен\nНажмите любую клавишу...");
+                        seller.Add(item);
+                        Console.Write("\nТовар добавлен");
                         break;
                     case "2":
                         Console.Write("Введите наименование продаваемого товара - ");
@@ -60,37 +60,35 @@ namespace EVL_HomeWork_31
                             quantityItem = Convert.ToInt32(Console.ReadLine());
                             if (seller.IsQuantity(nameItem, quantityItem))
                             {
-                                priceItem = seller.SellItem(nameItem, quantityItem);
-                                buyer.BuyingItem(nameItem, quantityItem, priceItem);
-                                Console.Write("\nТовар продан покупателю\nНажмите любую клавишу...");
+                                Item bayItem = seller.Sell(nameItem, quantityItem);
+                                buyer.BuyItem(bayItem);
+                                Console.Write("\nТовар продан покупателю");
                             }
                             else
                             {
-                                Console.Write("\nНеобходимого количества нет в наличии\nНажмите любую клавишу...");
+                                Console.Write("\nНеобходимого количества нет в наличии");
                             }
                         }
                         else
                         {
-                            Console.Write("\nУказанного товара нет в продаже\nНажмите любую клавишу...");
+                            Console.Write("\nУказанного товара нет в продаже");
                         }
                         break;
                     case "3":
-                        seller.ShowSellerItem();
-                        Console.WriteLine("\nНажмите любую клавишу...");
+                        seller.ShowItem();
                         break;
                     case "4":
-                        buyer.ShowBuyerItem();
-                        Console.WriteLine("\nНажмите любую клавишу...");
+                        buyer.ShowItem();
                         break;
                     case "5":
                         exit = true;
-                        Console.WriteLine("\nНажмите любую клавишу...");
                         break;
                     default:
-                        Console.Write("\nОшибка ввода\nНажмите любую клавишу...");
+                        Console.Write("\nОшибка ввода");
                         break;
                 }
 
+                Console.Write("\nНажмите любую клавишу...");
                 Console.ReadKey();
                 Console.Clear();
             }
@@ -99,51 +97,17 @@ namespace EVL_HomeWork_31
 
     class Item      // Товар
     {
-        private string _name;
-        private int _quantity;
-        private double _price;
+        public string Name { get; }
 
-        public string Name
-        {
-            get
-            {
-                return _name;
-            }
-            set
-            {
-                _name = value;
-            }
-        }
+        public int Quantity { get; set; }
 
-        public int Quantity
-        {
-            get
-            {
-                return _quantity;
-            }
-            set
-            {
-                _quantity = value;
-            }
-        }
-
-        public double Price
-        {
-            get
-            {
-                return _price;
-            }
-            set
-            {
-                _price = value;
-            }
-        }
+        public double Price { get; }
 
         public Item(string name, int quantity, double price)
         {
-            _name = name;
-            _quantity = quantity;
-            _price = price;
+            Name = name;
+            Quantity = quantity;
+            Price = price;
         }
     }
 
@@ -156,7 +120,7 @@ namespace EVL_HomeWork_31
             _itemsSeller = new List<Item>();
         }
 
-        public void ShowSellerItem()
+        public void ShowItem()
         {
             foreach (var item in _itemsSeller)
             {
@@ -164,7 +128,7 @@ namespace EVL_HomeWork_31
             }
         }
 
-        public void AddItem(Item item)
+        public void Add(Item item)
         {
             if (IsExist(item.Name))
             {
@@ -179,31 +143,27 @@ namespace EVL_HomeWork_31
 
         public bool IsExist(string nameItem)
         {
-            return isExist(nameItem);
-        }
-
-        private bool isExist(string nameItem)
-        {
             return _itemsSeller.Exists(findItem => findItem.Name == nameItem);
         }
 
         public bool IsQuantity(string nameItem, int quantityItem)
         {
-            return isQuantity(nameItem, quantityItem);
-        }
-
-        private bool isQuantity(string nameItem, int quantityItem)
-        {
             Item item = _itemsSeller.Find(findItem => findItem.Name == nameItem);
             return item.Quantity >= quantityItem;
         }
 
-        public double SellItem(string nameItem, int quantityItem)
+        public Item Sell(string nameItem, int quantityItem)
         {
             Item itemSold = _itemsSeller.Find(findItem => findItem.Name == nameItem);
             itemSold.Quantity -= quantityItem;
+            Item item = new Item(nameItem, quantityItem, itemSold.Price);
 
-            return itemSold.Price;
+            if (itemSold.Quantity == 0)
+            {
+                _itemsSeller.Remove(itemSold);
+            }
+
+            return item;
         }
     }
 
@@ -218,21 +178,15 @@ namespace EVL_HomeWork_31
 
         public bool IsExist(string nameItem)
         {
-            return isExist(nameItem);
-        }
-
-        private bool isExist(string nameItem)
-        {
             return _itemsBuyer.Exists(findItem => findItem.Name == nameItem);
         }
 
-        public void BuyingItem(string nameItem, int quantityItem, double priceItem)
+        public void BuyItem(Item item)
         {
-            Item item = new Item(nameItem, quantityItem, priceItem);
-            if (IsExist(nameItem))
+            if (IsExist(item.Name))
             {
-                Item itemPurchase = _itemsBuyer.Find(findItem => findItem.Name == nameItem);
-                itemPurchase.Quantity += quantityItem;
+                Item itemPurchase = _itemsBuyer.Find(findItem => findItem.Name == item.Name);
+                itemPurchase.Quantity += item.Quantity;
             }
             else
             {
@@ -240,7 +194,7 @@ namespace EVL_HomeWork_31
             }
         }
 
-        public void ShowBuyerItem()
+        public void ShowItem()
         {
             foreach (var item in _itemsBuyer)
             {
