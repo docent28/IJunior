@@ -109,6 +109,14 @@ namespace EVL_HomeWork_30
         private string _nicName;
         private int _level;
 
+        public Player(int number, string nicName, int level)
+        {
+            Number = number;
+            _nicName = nicName;
+            _level = level;
+            _isBanned = false;
+        }
+
         public string NicName
         {
             get
@@ -140,14 +148,6 @@ namespace EVL_HomeWork_30
 
         public void UnBan()
         {
-            _isBanned = false;
-        }
-
-        public Player(int number, string nicName, int level)
-        {
-            Number = number;
-            _nicName = nicName;
-            _level = level;
             _isBanned = false;
         }
     }

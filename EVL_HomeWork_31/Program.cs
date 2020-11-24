@@ -61,7 +61,7 @@ namespace EVL_HomeWork_31
                             if (seller.IsQuantity(nameItem, quantityItem))
                             {
                                 Item bayItem = seller.Sell(nameItem, quantityItem);
-                                buyer.BuyItem(bayItem);
+                                buyer.Add(bayItem);
                                 Console.Write("\nТовар продан покупателю");
                             }
                             else
@@ -95,12 +95,46 @@ namespace EVL_HomeWork_31
         }
     }
 
-    class Item      // Товар
+    class TransactionParticipant
+    {
+        protected List<Item> _items;
+
+        public TransactionParticipant()
+        {
+            _items = new List<Item>();
+        }
+
+        public void ShowItem()
+        {
+            foreach (var item in _items)
+            {
+                Console.WriteLine(item.Name + "\t" + item.Quantity + " шт.\t" + item.Price + " руб.");
+            }
+        }
+
+        public bool IsExist(string nameItem)
+        {
+            return _items.Exists(findItem => findItem.Name == nameItem);
+        }
+
+        public void Add(Item item)
+        {
+            if (IsExist(item.Name))
+            {
+                Item itemAdd = _items.Find(findItem => findItem.Name == item.Name);
+                itemAdd.Quantity += item.Quantity;
+            }
+            else
+            {
+                _items.Add(item);
+            }
+        }
+    }
+
+    class Item
     {
         public string Name { get; }
-
         public int Quantity { get; set; }
-
         public double Price { get; }
 
         public Item(string name, int quantity, double price)
@@ -111,95 +145,30 @@ namespace EVL_HomeWork_31
         }
     }
 
-    class Seller    // Продавец
+    class Seller : TransactionParticipant
     {
-        private List<Item> _itemsSeller;
-
-        public Seller()
-        {
-            _itemsSeller = new List<Item>();
-        }
-
-        public void ShowItem()
-        {
-            foreach (var item in _itemsSeller)
-            {
-                Console.WriteLine(item.Name + "\t" + item.Quantity + " шт.\t" + item.Price + " руб.");
-            }
-        }
-
-        public void Add(Item item)
-        {
-            if (IsExist(item.Name))
-            {
-                Item itemAdd = _itemsSeller.Find(findItem => findItem.Name == item.Name);
-                itemAdd.Quantity += item.Quantity;
-            }
-            else
-            {
-                _itemsSeller.Add(item);
-            }
-        }
-
-        public bool IsExist(string nameItem)
-        {
-            return _itemsSeller.Exists(findItem => findItem.Name == nameItem);
-        }
-
         public bool IsQuantity(string nameItem, int quantityItem)
         {
-            Item item = _itemsSeller.Find(findItem => findItem.Name == nameItem);
+            Item item = _items.Find(findItem => findItem.Name == nameItem);
             return item.Quantity >= quantityItem;
         }
 
         public Item Sell(string nameItem, int quantityItem)
         {
-            Item itemSold = _itemsSeller.Find(findItem => findItem.Name == nameItem);
+            Item itemSold = _items.Find(findItem => findItem.Name == nameItem);
             itemSold.Quantity -= quantityItem;
             Item item = new Item(nameItem, quantityItem, itemSold.Price);
 
             if (itemSold.Quantity == 0)
             {
-                _itemsSeller.Remove(itemSold);
+                _items.Remove(itemSold);
             }
 
             return item;
         }
     }
 
-    class Buyer     // Покупатель
+    class Buyer : TransactionParticipant
     {
-        private List<Item> _itemsBuyer;
-
-        public Buyer()
-        {
-            _itemsBuyer = new List<Item>();
-        }
-
-        public bool IsExist(string nameItem)
-        {
-            return _itemsBuyer.Exists(findItem => findItem.Name == nameItem);
-        }
-
-        public void BuyItem(Item item)
-        {
-            if (IsExist(item.Name))
-            {
-                Item itemPurchase = _itemsBuyer.Find(findItem => findItem.Name == item.Name);
-                itemPurchase.Quantity += item.Quantity;
-            }
-            else
-            {
-                _itemsBuyer.Add(item);
-            }
-        }
-
-        public void ShowItem()
-        {
-            foreach (var item in _itemsBuyer)
-            {
-                Console.WriteLine(item.Name + "\t" + item.Quantity + " шт.\t" + item.Price + " руб.");
-            }
-        }
     }
 }
