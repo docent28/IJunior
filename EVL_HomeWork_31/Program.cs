@@ -61,6 +61,7 @@ namespace EVL_HomeWork_31
                             if (seller.IsQuantity(nameItem, quantityItem))
                             {
                                 Item bayItem = seller.Sell(nameItem, quantityItem);
+                                bayItem.Price = buyer.SetPrice();
                                 buyer.Add(bayItem);
                                 Console.Write("\nТовар продан покупателю");
                             }
@@ -97,36 +98,40 @@ namespace EVL_HomeWork_31
 
     class TransactionParticipant
     {
-        protected List<Item> _items;
+        protected List<Item> Items;
+        private double _sum;
 
         public TransactionParticipant()
         {
-            _items = new List<Item>();
+            Items = new List<Item>();
         }
 
         public void ShowItem()
         {
-            foreach (var item in _items)
+            _sum = 0;
+            foreach (var item in Items)
             {
                 Console.WriteLine(item.Name + "\t" + item.Quantity + " шт.\t" + item.Price + " руб.");
+                _sum += item.Price * item.Quantity;
             }
+            Console.WriteLine($"\nИтого товаров на сумму - {_sum} руб.");
         }
 
         public bool IsExist(string nameItem)
         {
-            return _items.Exists(findItem => findItem.Name == nameItem);
+            return Items.Exists(findItem => findItem.Name == nameItem);
         }
 
         public void Add(Item item)
         {
             if (IsExist(item.Name))
             {
-                Item itemAdd = _items.Find(findItem => findItem.Name == item.Name);
+                Item itemAdd = Items.Find(findItem => findItem.Name == item.Name);
                 itemAdd.Quantity += item.Quantity;
             }
             else
             {
-                _items.Add(item);
+                Items.Add(item);
             }
         }
     }
@@ -135,7 +140,7 @@ namespace EVL_HomeWork_31
     {
         public string Name { get; }
         public int Quantity { get; set; }
-        public double Price { get; }
+        public double Price { get; set; }
 
         public Item(string name, int quantity, double price)
         {
@@ -149,19 +154,19 @@ namespace EVL_HomeWork_31
     {
         public bool IsQuantity(string nameItem, int quantityItem)
         {
-            Item item = _items.Find(findItem => findItem.Name == nameItem);
+            Item item = Items.Find(findItem => findItem.Name == nameItem);
             return item.Quantity >= quantityItem;
         }
 
         public Item Sell(string nameItem, int quantityItem)
         {
-            Item itemSold = _items.Find(findItem => findItem.Name == nameItem);
+            Item itemSold = Items.Find(findItem => findItem.Name == nameItem);
             itemSold.Quantity -= quantityItem;
             Item item = new Item(nameItem, quantityItem, itemSold.Price);
 
             if (itemSold.Quantity == 0)
             {
-                _items.Remove(itemSold);
+                Items.Remove(itemSold);
             }
 
             return item;
@@ -170,5 +175,13 @@ namespace EVL_HomeWork_31
 
     class Buyer : TransactionParticipant
     {
+        private double _price;
+        public double SetPrice()
+        {
+            Console.Write("По какой цене вы продаете товар? - ");
+            _price = Convert.ToDouble(Console.ReadLine());
+
+            return _price;
+        }
     }
 }
