@@ -12,20 +12,100 @@ namespace EVL_HomeWork_32
         {
             int quantityTicket;
             string listCarriages;
+            bool exit = false;
+            string menuItem;
+            int oldRow;
+            int rowInfo = 0;
 
+            while (!exit)
+            {
+                if (rowInfo > 13)
+                {
+                    rowInfo = 0;
+                }
+                Console.SetCursorPosition(0, 15);
+                Console.WriteLine("Информация о направлениях, билетах и составе поезда отображается в верхней части экрана");
+                Console.WriteLine("Шаг 1 - создать направление");
+                oldRow = Console.CursorTop;
+                Console.Write("\n\n\n\nНажмите любую клавишу...");
+                Console.ReadKey();
+                Direction direction = new Direction();
+                Console.SetCursorPosition(0, rowInfo);
+                Console.WriteLine(direction.CreateRoute());
 
-            Direction direction = new Direction();
-            Console.WriteLine(direction.CreateRoute());
+                Console.SetCursorPosition(0, oldRow);
+                Console.WriteLine("Шаг 2 - продать билеты");
+                oldRow = Console.CursorTop;
+                Console.Write("\n\n\nНажмите любую клавишу...");
+                Console.ReadKey();
+                Ticket ticket = new Ticket();
+                quantityTicket = ticket.SellTickets();
+                Console.SetCursorPosition(50, rowInfo);
+                Console.WriteLine($"Продано {quantityTicket} билетов");
 
-            Ticket ticket = new Ticket();
-            quantityTicket = ticket.SellTickets();
-            Console.WriteLine($"Продано {quantityTicket} билетов");
+                Console.SetCursorPosition(0, oldRow);
+                Console.WriteLine("Шаг 3 - собрать состав");
+                oldRow = Console.CursorTop;
+                Console.Write("\n\nНажмите любую клавишу...");
+                Console.ReadKey();
+                FastTrain fastTrain = new FastTrain();
+                listCarriages = fastTrain.CreateTrain(quantityTicket);
 
-            FastTrain fastTrain = new FastTrain();
-            listCarriages = fastTrain.CreateTrain(quantityTicket);
+                Console.SetCursorPosition(10, ++rowInfo);
+                Console.Write("Поезд состоит из вагонов следующей вместимости: - ");
+                Console.Write(listCarriages);
+                Console.SetCursorPosition(85, rowInfo);
+                Console.WriteLine("\tОжидает отправки ");
 
-            Console.WriteLine("Поезд состоит из вагонов следующей вместимости:");
-            Console.WriteLine(listCarriages);
+                Console.SetCursorPosition(0, oldRow);
+                Console.WriteLine("Шаг 4 - отправить состав");
+                Console.Write("\nНажмите любую клавишу...");
+                oldRow = Console.CursorTop;
+                Console.ReadKey();
+                Console.SetCursorPosition(85, rowInfo);
+                Console.WriteLine("\tВ пути           ");
+                rowInfo = Console.CursorTop;
+
+                Console.SetCursorPosition(0, oldRow);
+                Console.Write("Продолжаем отправлять поезда? y/n - ");
+                menuItem = Console.ReadLine();
+
+                while (menuItem != "y" && menuItem != "n")
+                {
+                    Console.SetCursorPosition(0, oldRow);
+                    Console.Write(String.Format("{0,37}", " "));
+                    Console.SetCursorPosition(0, oldRow);
+                    Console.Write(String.Format("{0,100}", " "));
+                    Console.SetCursorPosition(0, oldRow);
+                    Console.Write("Ошибка ввода. Введите y или n - ");
+                    menuItem = Console.ReadLine();
+                }
+                if (menuItem == "n")
+                {
+                    exit = true;
+                }
+                else if (menuItem == "y")
+                {
+                    Console.SetCursorPosition(0, oldRow);
+                    Console.Write(String.Format("{0,37}", " "));
+
+                    Console.SetCursorPosition(0, 16);
+                    for (int i = 0; i < 4; i++)
+                    {
+                        Console.WriteLine(String.Format("{0,37}", " "));
+                    }
+
+                    if (rowInfo > 13)
+                    {
+                        Console.SetCursorPosition(0, 0);
+                        for (int i = 0; i < 14; i++)
+                        {
+                            Console.WriteLine(String.Format("{0,95}", " "));
+                        }
+                        Console.SetCursorPosition(0, 16);
+                    }
+                }
+            }
         }
     }
 

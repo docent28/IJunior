@@ -61,9 +61,18 @@ namespace EVL_HomeWork_31
                             if (seller.IsQuantity(nameItem, quantityItem))
                             {
                                 Item bayItem = seller.Sell(nameItem, quantityItem);
-                                bayItem.Price = buyer.SetPrice();
-                                buyer.Add(bayItem);
-                                Console.Write("\nТовар продан покупателю");
+                                priceItem = buyer.SetPrice();
+                                if ((priceItem * quantityItem) > buyer.Money)
+                                {
+                                    Console.WriteLine($"У меня всего {buyer.Money} рублей.\nПриду позже");
+                                }
+                                else
+                                {
+                                    bayItem.Price = priceItem;
+                                    buyer.PaymentItem(priceItem * quantityItem);
+                                    buyer.Add(bayItem);
+                                    Console.Write("\nТовар продан покупателю");
+                                }
                             }
                             else
                             {
@@ -176,6 +185,27 @@ namespace EVL_HomeWork_31
     class Buyer : TransactionParticipant
     {
         private double _price;
+        public double Money { get; private set; }
+
+        public Buyer()
+        {
+            Random rand = new Random();
+            Money = rand.Next(500);
+            int oldRow = Console.CursorTop;
+            Console.SetCursorPosition(0, 25);
+            Console.WriteLine(Money);
+            Console.SetCursorPosition(0, oldRow);
+        }
+
+        public void PaymentItem(double payment)
+        {
+            Money -= payment;
+            int oldRow = Console.CursorTop;
+            Console.SetCursorPosition(0, 25);
+            Console.WriteLine(Money);
+            Console.SetCursorPosition(0, oldRow);
+        }
+
         public double SetPrice()
         {
             Console.Write("По какой цене вы продаете товар? - ");
