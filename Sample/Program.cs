@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace YNI_Task_03
 {
@@ -6,43 +7,53 @@ namespace YNI_Task_03
     {
         static void Main(string[] args)
         {
-            Console.Write("Создайте пароль: ");
-            string password = Console.ReadLine();
-            Console.WriteLine("Пароль успешно создан.");
-
-            string enterPass;
-            string secretMessage;
-            secretMessage = "Я секретное сообщение. Видимо код сработал =)";
-            int count = 0;
+            List<Item> items = new List<Item>();
+            string nameItem;
+            int quantityItem;
+            double priceItem;
+            double sum = 0;
 
 
-            do
+
+            nameItem = "тов1";
+            quantityItem = Convert.ToInt32(Console.ReadLine());
+            priceItem = (double)Convert.ToInt32("55") / (double)(quantityItem);
+            Item item = new Item(nameItem, quantityItem, priceItem);
+            items.Add(item);
+
+            nameItem = "тов2";
+            quantityItem = Convert.ToInt32(Console.ReadLine());
+            priceItem = (double)Convert.ToInt32("75") / (double)(quantityItem);
+            Item item1 = new Item(nameItem, quantityItem, priceItem);
+            items.Add(item1);
+
+            nameItem = "тов3";
+            quantityItem = Convert.ToInt32(Console.ReadLine());
+            priceItem = (double)Convert.ToInt32("91") / (double)Convert.ToInt32("43");
+            Item item2 = new Item(nameItem, quantityItem, priceItem);
+            items.Add(item2);
+
+            foreach (var var_item in items)
             {
-                Console.Write("\nВведите пароль: ");
-                enterPass = Console.ReadLine();
-
-                if (enterPass != password)
-                {
-                    if (count < 2)
-                    {
-                        Console.Write("\nНеверный пароль.");
-                        count = count + 1;
-                    }
-                    else
-                    {
-                        Console.WriteLine("\nПопытки исчерпаны");
-                        break;
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("\n" + secretMessage);
-                    break;
-                }
+                sum += var_item.Price * var_item.Quantity;
             }
-            while (enterPass != password);
 
-            Console.ReadKey();
+            Console.WriteLine(Math.Round(sum, 2));
+
+        }
+    }
+
+    class Item
+    {
+        public string Name { get; }
+        public int Quantity { get; set; }
+        public double Price { get; set; }
+
+        public Item(string name, int quantity, double price)
+        {
+            Name = name;
+            Quantity = quantity;
+            Price = price;
         }
     }
 }

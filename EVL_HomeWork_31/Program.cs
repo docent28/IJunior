@@ -27,6 +27,13 @@ namespace EVL_HomeWork_31
                 Console.WriteLine("5 - выйти из программы");
                 Console.Write("\nВыберите нужный пункт - ");
 
+                int oldRow = Console.CursorTop;
+                int oldCol = Console.CursorLeft;
+                Console.SetCursorPosition(0, 25);
+                Console.WriteLine($"У покупателя в кошельке {Math.Round(buyer.Money, 2)} рублей.");
+                Console.SetCursorPosition(oldCol, oldRow);
+
+
                 menuItem = Console.ReadLine();
 
                 switch (menuItem)
@@ -36,17 +43,12 @@ namespace EVL_HomeWork_31
                         nameItem = Console.ReadLine();
                         Console.Write("Введите количество товара - ");
                         quantityItem = Convert.ToInt32(Console.ReadLine());
+                        Console.Write("Введите стоимость товара - ");
+                        priceItem = Convert.ToDouble(Console.ReadLine());
                         if (seller.IsExist(nameItem))
                         {
-                            Console.WriteLine("\nТакой товар уже есть в списке\nПриходуем по старой цене");
-                            priceItem = 0;
+                            Console.WriteLine("\nТакой товар уже есть в списке\nНа складе товар будет храниться по средней цене");
                         }
-                        else
-                        {
-                            Console.Write("Введите стоимость товара - ");
-                            priceItem = Convert.ToDouble(Console.ReadLine());
-                        }
-
                         Item item = new Item(nameItem, quantityItem, priceItem);
                         seller.Add(item);
                         Console.Write("\nТовар добавлен");
@@ -61,10 +63,11 @@ namespace EVL_HomeWork_31
                             if (seller.IsQuantity(nameItem, quantityItem))
                             {
                                 Item bayItem = seller.Sell(nameItem, quantityItem);
-                                priceItem = buyer.SetPrice();
+                                buyer.SetPrice();
+                                priceItem = buyer.Price;
                                 if ((priceItem * quantityItem) > buyer.Money)
                                 {
-                                    Console.WriteLine($"У меня всего {buyer.Money} рублей.\nПриду позже");
+                                    Console.WriteLine($"У меня всего {string.Format("{0:0.00}", buyer.Money)} рублей.\nПриду позже");
                                 }
                                 else
                                 {
@@ -109,6 +112,7 @@ namespace EVL_HomeWork_31
     {
         protected List<Item> Items;
         private double _sum;
+        private double _averagePrice;
 
         public TransactionParticipant()
         {
@@ -118,12 +122,12 @@ namespace EVL_HomeWork_31
         public void ShowItem()
         {
             _sum = 0;
-            foreach (var item in Items)
+            foreach (Item item in Items)
             {
-                Console.WriteLine(item.Name + "\t" + item.Quantity + " шт.\t" + item.Price + " руб.");
+                Console.WriteLine(item.Name + "\t" + item.Quantity + " шт.\t" + string.Format("{0:0.00}", item.Price) + " руб.");
                 _sum += item.Price * item.Quantity;
             }
-            Console.WriteLine($"\nИтого товаров на сумму - {_sum} руб.");
+            Console.WriteLine($"\nИтого товаров на сумму - " + string.Format("{0:0.00}", _sum) + " руб.");
         }
 
         public bool IsExist(string nameItem)
@@ -136,7 +140,9 @@ namespace EVL_HomeWork_31
             if (IsExist(item.Name))
             {
                 Item itemAdd = Items.Find(findItem => findItem.Name == item.Name);
+                _averagePrice = (item.Quantity * item.Price + itemAdd.Quantity * itemAdd.Price) / (item.Quantity + itemAdd.Quantity);
                 itemAdd.Quantity += item.Quantity;
+                itemAdd.Price = _averagePrice;
             }
             else
             {
@@ -184,34 +190,24 @@ namespace EVL_HomeWork_31
 
     class Buyer : TransactionParticipant
     {
-        private double _price;
+        public double Price { get; private set; }
         public double Money { get; private set; }
 
         public Buyer()
         {
             Random rand = new Random();
             Money = rand.Next(500);
-            int oldRow = Console.CursorTop;
-            Console.SetCursorPosition(0, 25);
-            Console.WriteLine(Money);
-            Console.SetCursorPosition(0, oldRow);
         }
 
         public void PaymentItem(double payment)
         {
             Money -= payment;
-            int oldRow = Console.CursorTop;
-            Console.SetCursorPosition(0, 25);
-            Console.WriteLine(Money);
-            Console.SetCursorPosition(0, oldRow);
         }
 
-        public double SetPrice()
+        public void SetPrice()
         {
             Console.Write("По какой цене вы продаете товар? - ");
-            _price = Convert.ToDouble(Console.ReadLine());
-
-            return _price;
+            Price = Convert.ToDouble(Console.ReadLine());
         }
     }
 }

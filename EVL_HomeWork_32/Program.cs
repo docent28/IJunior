@@ -14,12 +14,13 @@ namespace EVL_HomeWork_32
             string listCarriages;
             bool exit = false;
             string menuItem;
+            int colRowInfo = 13;
             int oldRow;
             int rowInfo = 0;
 
             while (!exit)
             {
-                if (rowInfo > 13)
+                if (rowInfo > colRowInfo)
                 {
                     rowInfo = 0;
                 }
@@ -119,8 +120,6 @@ namespace EVL_HomeWork_32
                                      "Снежинск",    "Кострома",    "Енисейск",   "Балтийск",   "Шелехов",    "Балашиха",
                                      "Харовск",     "Туринск",     "Вологда",    "Когалым",    "Плесецк",    "Суздаль"};
 
-        public Direction() { }
-
         public string CreateRoute()
         {
             Random rand = new Random();
@@ -139,8 +138,6 @@ namespace EVL_HomeWork_32
     {
         public int Quantity { get; private set; }           // количество билетов
 
-        public Ticket() { }
-
         public int SellTickets()
         {
             Random rand = new Random();
@@ -153,11 +150,11 @@ namespace EVL_HomeWork_32
     class Carriage      // вагон
     {
         public int WagonCapacity { get; private set; }             // вместимость вагона
-        static Random rand = new Random();
+        private static Random _rand = new Random();
 
         public Carriage()
         {
-            WagonCapacity = rand.Next(15, 46);
+            WagonCapacity = _rand.Next(15, 46);
         }
     }
 
