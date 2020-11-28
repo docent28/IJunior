@@ -29,7 +29,7 @@ namespace YNI_Task_03
 
             nameItem = "тов3";
             quantityItem = Convert.ToInt32(Console.ReadLine());
-            priceItem = (double)Convert.ToInt32("91") / (double)Convert.ToInt32("43");
+            priceItem = (double)Convert.ToInt32("91") / (double)Convert.ToInt32("23");
             Item item2 = new Item(nameItem, quantityItem, priceItem);
             items.Add(item2);
 

@@ -13,8 +13,9 @@ namespace EVL_HomeWork_31
             bool exit = false;
             string menuItem;
             string nameItem;
+            string buyerConsent;
             int quantityItem;
-            double priceItem;
+            decimal priceItem;
             Seller seller = new Seller();
             Buyer buyer = new Buyer();
 
@@ -44,7 +45,7 @@ namespace EVL_HomeWork_31
                         Console.Write("Введите количество товара - ");
                         quantityItem = Convert.ToInt32(Console.ReadLine());
                         Console.Write("Введите стоимость товара - ");
-                        priceItem = Convert.ToDouble(Console.ReadLine());
+                        priceItem = Convert.ToDecimal(Console.ReadLine());
                         if (seller.IsExist(nameItem))
                         {
                             Console.WriteLine("\nТакой товар уже есть в списке\nНа складе товар будет храниться по средней цене");
@@ -54,25 +55,32 @@ namespace EVL_HomeWork_31
                         Console.Write("\nТовар добавлен");
                         break;
                     case "2":
-                        Console.Write("Введите наименование продаваемого товара - ");
+                        Console.Write("Введите наименование приобретаемого товара - ");
                         nameItem = Console.ReadLine();
                         if (seller.IsExist(nameItem))
                         {
-                            Console.Write("Введите количество продаваемого товара - ");
+                            seller.SetPrice(nameItem);
+                            priceItem = seller.Price;
+                            Console.Write($"Я продам вам товар по цене - {priceItem}\nВы согласны приобрести товар? y/n - ");
+                            buyerConsent = Console.ReadLine();
+                            if (buyerConsent != "y")
+                            {
+                                Console.WriteLine("Вы отказались от покупки. Я жду вас в другой раз");
+                                break;
+                            }
+                            Console.Write("Введите количество приобретаемого товара - ");
                             quantityItem = Convert.ToInt32(Console.ReadLine());
                             if (seller.IsQuantity(nameItem, quantityItem))
                             {
-                                Item bayItem = seller.Sell(nameItem, quantityItem);
-                                buyer.SetPrice();
-                                priceItem = buyer.Price;
                                 if ((priceItem * quantityItem) > buyer.Money)
                                 {
                                     Console.WriteLine($"У меня всего {string.Format("{0:0.00}", buyer.Money)} рублей.\nПриду позже");
                                 }
                                 else
                                 {
+                                    Item bayItem = seller.Sell(nameItem, quantityItem);
                                     bayItem.Price = priceItem;
-                                    buyer.PaymentItem(priceItem * quantityItem);
+                                    buyer.PayItem(priceItem * quantityItem);
                                     buyer.Add(bayItem);
                                     Console.Write("\nТовар продан покупателю");
                                 }
@@ -88,10 +96,10 @@ namespace EVL_HomeWork_31
                         }
                         break;
                     case "3":
-                        seller.ShowItem();
+                        seller.ShowItems();
                         break;
                     case "4":
-                        buyer.ShowItem();
+                        buyer.ShowItems();
                         break;
                     case "5":
                         exit = true;
@@ -111,15 +119,15 @@ namespace EVL_HomeWork_31
     class TransactionParticipant
     {
         protected List<Item> Items;
-        private double _sum;
-        private double _averagePrice;
+        private decimal _sum { get; set; }
+        private decimal _averagePrice { get; set; }
 
         public TransactionParticipant()
         {
             Items = new List<Item>();
         }
 
-        public void ShowItem()
+        public void ShowItems()
         {
             _sum = 0;
             foreach (Item item in Items)
@@ -142,11 +150,14 @@ namespace EVL_HomeWork_31
                 Item itemAdd = Items.Find(findItem => findItem.Name == item.Name);
                 _averagePrice = (item.Quantity * item.Price + itemAdd.Quantity * itemAdd.Price) / (item.Quantity + itemAdd.Quantity);
                 itemAdd.Quantity += item.Quantity;
-                itemAdd.Price = _averagePrice;
+                itemAdd.Price = Math.Round(_averagePrice, 2);
             }
             else
             {
-                Items.Add(item);
+                if (item.Quantity > 0)
+                {
+                    Items.Add(item);
+                }
             }
         }
     }
@@ -155,9 +166,9 @@ namespace EVL_HomeWork_31
     {
         public string Name { get; }
         public int Quantity { get; set; }
-        public double Price { get; set; }
+        public decimal Price { get; set; }
 
-        public Item(string name, int quantity, double price)
+        public Item(string name, int quantity, decimal price)
         {
             Name = name;
             Quantity = quantity;
@@ -167,6 +178,7 @@ namespace EVL_HomeWork_31
 
     class Seller : TransactionParticipant
     {
+        public decimal Price { get; private set; }
         public bool IsQuantity(string nameItem, int quantityItem)
         {
             Item item = Items.Find(findItem => findItem.Name == nameItem);
@@ -186,12 +198,20 @@ namespace EVL_HomeWork_31
 
             return item;
         }
+
+        public void SetPrice(string nameItem)
+        {
+            Random rand = new Random();
+
+            Item itemSold = Items.Find(findItem => findItem.Name == nameItem);
+            Price = Math.Round(itemSold.Price + itemSold.Price * Convert.ToDecimal(rand.NextDouble()), 2);
+        }
+
     }
 
     class Buyer : TransactionParticipant
     {
-        public double Price { get; private set; }
-        public double Money { get; private set; }
+        public decimal Money { get; private set; }
 
         public Buyer()
         {
@@ -199,15 +219,9 @@ namespace EVL_HomeWork_31
             Money = rand.Next(500);
         }
 
-        public void PaymentItem(double payment)
+        public void PayItem(decimal payment)
         {
             Money -= payment;
-        }
-
-        public void SetPrice()
-        {
-            Console.Write("По какой цене вы продаете товар? - ");
-            Price = Convert.ToDouble(Console.ReadLine());
         }
     }
 }
