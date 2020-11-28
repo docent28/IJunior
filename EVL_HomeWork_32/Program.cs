@@ -39,7 +39,7 @@ namespace EVL_HomeWork_32
                 oldRow = Console.CursorTop;
                 Console.Write("\n\n\nНажмите любую клавишу...");
                 Console.ReadKey();
-                Ticket ticket = new Ticket();
+                CashDesk ticket = new CashDesk();
                 quantityTicket = ticket.SellTickets();
                 Console.SetCursorPosition(50, rowInfo);
                 Console.WriteLine($"Продано {quantityTicket} билетов");
@@ -110,10 +110,10 @@ namespace EVL_HomeWork_32
         }
     }
 
-    class Direction     // направление
+    class Direction
     {
-        private string _departureStation;       // станция отправления
-        private string _destinationStation;     // станция назначения
+        private string _departureStation;
+        private string _destinationStation;
         private string[] _cities = { "Саранск",     "Сызрань",     "Нерюнгри",   "Смоленск",   "Ессентуки",  "Славгород",
                                      "Саяногорск",  "Новокузнецк", "Звенигород", "Всеволожск", "Новодвинск", "Завитинск",
                                      "Владивосток", "Оленегорск",  "Нефтегорск", "Биробиджан", "Чебоксары",  "Байкальск",
@@ -134,9 +134,9 @@ namespace EVL_HomeWork_32
         }
     }
 
-    class Ticket        // билет
+    class CashDesk
     {
-        public int Quantity { get; private set; }           // количество билетов
+        public int Quantity { get; private set; }
 
         public int SellTickets()
         {
@@ -147,9 +147,9 @@ namespace EVL_HomeWork_32
         }
     }
 
-    class Carriage      // вагон
+    class Carriage
     {
-        public int WagonCapacity { get; private set; }             // вместимость вагона
+        public int WagonCapacity { get; private set; }
         private static Random _rand = new Random();
 
         public Carriage()
@@ -158,7 +158,7 @@ namespace EVL_HomeWork_32
         }
     }
 
-    class FastTrain     // скорый поезд
+    class FastTrain
     {
         private List<Carriage> _carriages = new List<Carriage>();
         private string _trainComposition = "";
