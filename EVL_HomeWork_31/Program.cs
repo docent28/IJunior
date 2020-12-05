@@ -11,11 +11,7 @@ namespace EVL_HomeWork_31
         static void Main(string[] args)
         {
             bool exit = false;
-            string menuItem;
-            string nameItem;
-            string buyerConsent;
-            int quantityItem;
-            decimal priceItem;
+            string itemMenu;
             Seller seller = new Seller();
             Buyer buyer = new Buyer();
 
@@ -28,70 +24,21 @@ namespace EVL_HomeWork_31
                 Console.WriteLine("5 - выйти из программы");
                 Console.Write("\nВыберите нужный пункт - ");
 
-                int oldRow = Console.CursorTop;
-                int oldCol = Console.CursorLeft;
+                int cursorPositionRow = Console.CursorTop;
+                int cursorPositionCol = Console.CursorLeft;
                 Console.SetCursorPosition(0, 25);
                 Console.WriteLine($"У покупателя в кошельке {Math.Round(buyer.Money, 2)} рублей.");
-                Console.SetCursorPosition(oldCol, oldRow);
+                Console.SetCursorPosition(cursorPositionCol, cursorPositionRow);
 
-                menuItem = Console.ReadLine();
+                itemMenu = Console.ReadLine();
 
-                switch (menuItem)
+                switch (itemMenu)
                 {
                     case "1":
-                        Console.Write("Введите наименование товара - ");
-                        nameItem = Console.ReadLine();
-                        Console.Write("Введите количество товара - ");
-                        quantityItem = Convert.ToInt32(Console.ReadLine());
-                        Console.Write("Введите стоимость товара - ");
-                        priceItem = Convert.ToDecimal(Console.ReadLine());
-                        if (seller.IsExist(nameItem))
-                        {
-                            Console.WriteLine("\nТакой товар уже есть в списке\nНа складе товар будет храниться по средней цене");
-                        }
-                        Item item = new Item(nameItem, quantityItem, priceItem);
-                        seller.Add(item);
-                        Console.Write("\nТовар добавлен");
+                        seller.CapitalizeItem(seller);
                         break;
                     case "2":
-                        Console.Write("Введите наименование приобретаемого товара - ");
-                        nameItem = Console.ReadLine();
-                        if (seller.IsExist(nameItem))
-                        {
-                            priceItem = seller.SetPrice(nameItem);
-                            Console.Write($"Я продам вам товар по цене - {priceItem}\nВы согласны приобрести товар? y/n - ");
-                            buyerConsent = Console.ReadLine();
-                            if (buyerConsent != "y")
-                            {
-                                Console.WriteLine("Вы отказались от покупки. Я жду вас в другой раз");
-                                break;
-                            }
-                            Console.Write("Введите количество приобретаемого товара - ");
-                            quantityItem = Convert.ToInt32(Console.ReadLine());
-                            if (seller.IsQuantity(nameItem, quantityItem))
-                            {
-                                if ((priceItem * quantityItem) > buyer.Money)
-                                {
-                                    Console.WriteLine($"У меня всего {string.Format("{0:0.00}", buyer.Money)} рублей.\nПриду позже");
-                                }
-                                else
-                                {
-                                    Item bayItem = seller.Sell(nameItem, quantityItem);
-                                    bayItem.Price = priceItem;
-
-                                    buyer.BuyItem(bayItem);
-                                    Console.Write("\nТовар продан покупателю");
-                                }
-                            }
-                            else
-                            {
-                                Console.Write("\nНеобходимого количества нет в наличии");
-                            }
-                        }
-                        else
-                        {
-                            Console.Write("\nУказанного товара нет в продаже");
-                        }
+                        buyer.BuyItem(seller, buyer);
                         break;
                     case "3":
                         seller.ShowItems();
@@ -135,7 +82,7 @@ namespace EVL_HomeWork_31
             Console.WriteLine($"\nИтого товаров на сумму - " + string.Format("{0:0.00}", sum) + " руб.");
         }
 
-        public bool IsExist(string nameItem)
+        public bool IsItemAvailable(string nameItem)
         {
             return Items.Exists(findItem => findItem.Name == nameItem);
         }
@@ -144,19 +91,16 @@ namespace EVL_HomeWork_31
         {
             decimal averagePrice;
 
-            if (IsExist(item.Name))
+            if (IsItemAvailable(item.Name))
             {
-                Item itemAdd = Items.Find(findItem => findItem.Name == item.Name);
-                averagePrice = (item.Quantity * item.Price + itemAdd.Quantity * itemAdd.Price) / (item.Quantity + itemAdd.Quantity);
-                itemAdd.Quantity += item.Quantity;
-                itemAdd.Price = Math.Round(averagePrice, 2);
+                Item itemCurrent = Items.Find(findItem => findItem.Name == item.Name);
+                averagePrice = (item.Quantity * item.Price + itemCurrent.Quantity * itemCurrent.Price) / (item.Quantity + itemCurrent.Quantity);
+                itemCurrent.Quantity += item.Quantity;
+                itemCurrent.Price = Math.Round(averagePrice, 2);
             }
             else
             {
-                if (item.Quantity > 0)
-                {
-                    Items.Add(item);
-                }
+                Items.Add(item);
             }
         }
     }
@@ -164,8 +108,8 @@ namespace EVL_HomeWork_31
     class Item
     {
         public string Name { get; }
-        public int Quantity { get; set; }
-        public decimal Price { get; set; }
+        public int Quantity;
+        public decimal Price;
 
         public Item(string name, int quantity, decimal price)
         {
@@ -177,21 +121,79 @@ namespace EVL_HomeWork_31
 
     class Seller : TransactionParticipant
     {
-        public bool IsQuantity(string nameItem, int quantityItem)
+        public bool IsItemAvailable(string nameItem, int quantityItem)
         {
             Item item = Items.Find(findItem => findItem.Name == nameItem);
             return item.Quantity >= quantityItem;
         }
 
+        public void CapitalizeItem(Seller seller)
+        {
+            string name;
+            int quantity = 0;
+            string valueEntered;
+            decimal price = 0;
+
+            Console.Write("Введите наименование товара - ");
+            name = Console.ReadLine();
+            while (quantity <= 0)
+            {
+                Console.Write("Введите количество товара (> 0) - ");
+                valueEntered = Console.ReadLine();
+                if (int.TryParse(valueEntered, out quantity))
+                {
+                    if (quantity <= 0)
+                    {
+                        Console.WriteLine("Неправильное значение. Необходимо значение больше 0");
+                        Console.Write("\nНажмите любую клавишу...");
+                        Console.ReadKey();
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Неправильное значение. Необходимо числовое значение");
+                    Console.Write("\nНажмите любую клавишу...");
+                    Console.ReadKey();
+                }
+            }
+            while (price <= 0)
+            {
+                Console.Write("Введите стоимость товара (> 0) - ");
+                valueEntered = Console.ReadLine();
+                if (decimal.TryParse(valueEntered, out price))
+                {
+                    if (quantity <= 0)
+                    {
+                        Console.WriteLine("Неправильное значение. Необходимо значение больше 0");
+                        Console.Write("\nНажмите любую клавишу...");
+                        Console.ReadKey();
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Неправильное значение. Необходимо числовое значение");
+                    Console.Write("\nНажмите любую клавишу...");
+                    Console.ReadKey();
+                }
+            }
+            if (seller.IsItemAvailable(name))
+            {
+                Console.WriteLine("\nТакой товар уже есть в списке\nНа складе товар будет храниться по средней цене");
+            }
+
+            seller.Add(new Item(name, quantity, price));
+            Console.Write("\nТовар добавлен");
+        }
+
         public Item Sell(string nameItem, int quantityItem)
         {
-            Item itemSold = Items.Find(findItem => findItem.Name == nameItem);
-            itemSold.Quantity -= quantityItem;
-            Item item = new Item(nameItem, quantityItem, itemSold.Price);
+            Item itemCurrent = Items.Find(findItem => findItem.Name == nameItem);
+            itemCurrent.Quantity -= quantityItem;
+            Item item = new Item(nameItem, quantityItem, itemCurrent.Price);
 
-            if (itemSold.Quantity == 0)
+            if (itemCurrent.Quantity == 0)
             {
-                Items.Remove(itemSold);
+                Items.Remove(itemCurrent);
             }
 
             return item;
@@ -207,7 +209,6 @@ namespace EVL_HomeWork_31
 
             return price;
         }
-
     }
 
     class Buyer : TransactionParticipant
@@ -216,17 +217,82 @@ namespace EVL_HomeWork_31
 
         public Buyer()
         {
-            Random rand = new Random();
-            Money = rand.Next(500);
+            Random random = new Random();
+            Money = random.Next(500);
         }
 
-        public void BuyItem(Item bayItem)
+        public void BuyItem(Seller seller, Buyer buyer)
         {
-            PayItem(bayItem.Price * bayItem.Quantity);
-            Add(bayItem);
+            string name;
+            int quantity = 0;
+            decimal price;
+            string valueEntered;
+
+            Console.Write("Введите наименование приобретаемого товара - ");
+            name = Console.ReadLine();
+            if (seller.IsItemAvailable(name))
+            {
+                price = seller.SetPrice(name);
+                Console.Write($"Я продам вам товар по цене - {price}\nВы согласны приобрести товар? y/n - ");
+                if (Console.ReadLine().ToLower() != "y")
+                {
+                    Console.WriteLine("Вы отказались от покупки. Я жду вас в другой раз");
+                    return;
+                }
+                while (quantity <= 0)
+                {
+                    Console.Write("Введите количество приобретаемого товара - ");
+                    valueEntered = Console.ReadLine();
+                    if (int.TryParse(valueEntered, out quantity))
+                    {
+                        if (quantity <= 0)
+                        {
+                            Console.WriteLine("Неправильное значение. Необходимо значение больше 0");
+                            Console.Write("\nНажмите любую клавишу...");
+                            Console.ReadKey();
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Неправильное значение. Необходимо числовое значение");
+                        Console.Write("\nНажмите любую клавишу...");
+                        Console.ReadKey();
+                    }
+                }
+
+                if (seller.IsItemAvailable(name, quantity))
+                {
+                    if ((price * quantity) > buyer.Money)
+                    {
+                        Console.WriteLine($"У меня всего {string.Format("{0:0.00}", buyer.Money)} рублей.\nПриду позже");
+                    }
+                    else
+                    {
+                        Item bayItem = seller.Sell(name, quantity);
+                        bayItem.Price = price;
+
+                        buyer.BuyItem(bayItem);
+                        Console.Write("\nТовар продан покупателю");
+                    }
+                }
+                else
+                {
+                    Console.Write("\nНеобходимого количества нет в наличии");
+                }
+            }
+            else
+            {
+                Console.Write("\nУказанного товара нет в продаже");
+            }
         }
 
-        private void PayItem(decimal payment)
+        public void BuyItem(Item item)
+        {
+            Pay(item.Price * item.Quantity);
+            Add(item);
+        }
+
+        private void Pay(decimal payment)
         {
             Money -= payment;
         }
