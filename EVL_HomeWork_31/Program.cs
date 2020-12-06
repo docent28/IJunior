@@ -95,8 +95,7 @@ namespace EVL_HomeWork_31
             {
                 Item itemCurrent = Items.Find(findItem => findItem.Name == item.Name);
                 averagePrice = (item.Quantity * item.Price + itemCurrent.Quantity * itemCurrent.Price) / (item.Quantity + itemCurrent.Quantity);
-                itemCurrent.Quantity += item.Quantity;
-                itemCurrent.Price = Math.Round(averagePrice, 2);
+                itemCurrent.ChangingData(itemCurrent, item.Quantity, averagePrice);
             }
             else
             {
@@ -107,15 +106,31 @@ namespace EVL_HomeWork_31
 
     class Item
     {
-        public string Name { get; }
-        public int Quantity;
-        public decimal Price;
+        public string Name { get; private set; }
+        public int Quantity { get; private set; }
+        public decimal Price { get; private set; }
 
         public Item(string name, int quantity, decimal price)
         {
             Name = name;
             Quantity = quantity;
             Price = price;
+        }
+
+        public void ChangingData(Item item, int quantity, decimal averagePrice)
+        {
+            item.Quantity += quantity;
+            item.Price = Math.Round(averagePrice, 2);
+        }
+
+        public void ChangingData(Item item, int quantity)
+        {
+            item.Quantity -= quantity;
+        }
+
+        public void ChangingData(Item item, decimal price)
+        {
+            item.Price = price;
         }
     }
 
@@ -131,7 +146,7 @@ namespace EVL_HomeWork_31
         {
             string name;
             int quantity = 0;
-            string valueEntered;
+            string numericValue;
             decimal price = 0;
 
             Console.Write("Введите наименование товара - ");
@@ -139,40 +154,36 @@ namespace EVL_HomeWork_31
             while (quantity <= 0)
             {
                 Console.Write("Введите количество товара (> 0) - ");
-                valueEntered = Console.ReadLine();
-                if (int.TryParse(valueEntered, out quantity))
+                numericValue = Console.ReadLine();
+                if (int.TryParse(numericValue, out quantity))
                 {
                     if (quantity <= 0)
                     {
-                        Console.WriteLine("Неправильное значение. Необходимо значение больше 0");
-                        Console.Write("\nНажмите любую клавишу...");
+                        Console.Write("Неправильное значение. Необходимо значение больше 0\n\nНажмите любую клавишу...");
                         Console.ReadKey();
                     }
                 }
                 else
                 {
-                    Console.WriteLine("Неправильное значение. Необходимо числовое значение");
-                    Console.Write("\nНажмите любую клавишу...");
+                    Console.Write("Неправильное значение. Необходимо числовое значение\n\nНажмите любую клавишу...");
                     Console.ReadKey();
                 }
             }
             while (price <= 0)
             {
                 Console.Write("Введите стоимость товара (> 0) - ");
-                valueEntered = Console.ReadLine();
-                if (decimal.TryParse(valueEntered, out price))
+                numericValue = Console.ReadLine();
+                if (decimal.TryParse(numericValue, out price))
                 {
                     if (quantity <= 0)
                     {
-                        Console.WriteLine("Неправильное значение. Необходимо значение больше 0");
-                        Console.Write("\nНажмите любую клавишу...");
+                        Console.Write("Неправильное значение. Необходимо значение больше 0\n\nНажмите любую клавишу...");
                         Console.ReadKey();
                     }
                 }
                 else
                 {
-                    Console.WriteLine("Неправильное значение. Необходимо числовое значение");
-                    Console.Write("\nНажмите любую клавишу...");
+                    Console.Write("Неправильное значение. Необходимо числовое значение\n\nНажмите любую клавишу...");
                     Console.ReadKey();
                 }
             }
@@ -188,7 +199,7 @@ namespace EVL_HomeWork_31
         public Item Sell(string nameItem, int quantityItem)
         {
             Item itemCurrent = Items.Find(findItem => findItem.Name == nameItem);
-            itemCurrent.Quantity -= quantityItem;
+            itemCurrent.ChangingData(itemCurrent, quantityItem);
             Item item = new Item(nameItem, quantityItem, itemCurrent.Price);
 
             if (itemCurrent.Quantity == 0)
@@ -226,7 +237,7 @@ namespace EVL_HomeWork_31
             string name;
             int quantity = 0;
             decimal price;
-            string valueEntered;
+            string numericValue;
 
             Console.Write("Введите наименование приобретаемого товара - ");
             name = Console.ReadLine();
@@ -242,20 +253,18 @@ namespace EVL_HomeWork_31
                 while (quantity <= 0)
                 {
                     Console.Write("Введите количество приобретаемого товара - ");
-                    valueEntered = Console.ReadLine();
-                    if (int.TryParse(valueEntered, out quantity))
+                    numericValue = Console.ReadLine();
+                    if (int.TryParse(numericValue, out quantity))
                     {
                         if (quantity <= 0)
                         {
-                            Console.WriteLine("Неправильное значение. Необходимо значение больше 0");
-                            Console.Write("\nНажмите любую клавишу...");
+                            Console.Write("Неправильное значение. Необходимо значение больше 0\n\nНажмите любую клавишу...");
                             Console.ReadKey();
                         }
                     }
                     else
                     {
-                        Console.WriteLine("Неправильное значение. Необходимо числовое значение");
-                        Console.Write("\nНажмите любую клавишу...");
+                        Console.Write("Неправильное значение. Необходимо числовое значение\n\nНажмите любую клавишу...");
                         Console.ReadKey();
                     }
                 }
@@ -268,10 +277,9 @@ namespace EVL_HomeWork_31
                     }
                     else
                     {
-                        Item bayItem = seller.Sell(name, quantity);
-                        bayItem.Price = price;
-
-                        buyer.BuyItem(bayItem);
+                        Item buyItem = seller.Sell(name, quantity);
+                        buyItem.ChangingData(buyItem, price);
+                        buyer.BuyItem(buyItem);
                         Console.Write("\nТовар продан покупателю");
                     }
                 }
