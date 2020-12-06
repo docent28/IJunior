@@ -95,7 +95,7 @@ namespace EVL_HomeWork_31
             {
                 Item itemCurrent = Items.Find(findItem => findItem.Name == item.Name);
                 averagePrice = Math.Round((item.Quantity * item.Price + itemCurrent.Quantity * itemCurrent.Price) / (item.Quantity + itemCurrent.Quantity), 2);
-                itemCurrent.ChangeQuantity(item.Quantity);
+                itemCurrent.AddQuantity(item.Quantity);
                 itemCurrent.ChangePrice(averagePrice);
             }
             else
@@ -118,7 +118,7 @@ namespace EVL_HomeWork_31
             Price = price;
         }
 
-        public void ChangeQuantity(int quantity)
+        public void AddQuantity(int quantity)
         {
             Quantity += quantity;
         }
@@ -194,7 +194,7 @@ namespace EVL_HomeWork_31
         public Item Sell(string nameItem, int quantityItem)
         {
             Item itemCurrent = Items.Find(findItem => findItem.Name == nameItem);
-            itemCurrent.ChangeQuantity(-1 * quantityItem);
+            itemCurrent.AddQuantity(-1 * quantityItem);
             Item item = new Item(nameItem, quantityItem, itemCurrent.Price);
 
             if (itemCurrent.Quantity == 0)
