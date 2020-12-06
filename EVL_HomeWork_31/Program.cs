@@ -94,8 +94,9 @@ namespace EVL_HomeWork_31
             if (IsItemAvailable(item.Name))
             {
                 Item itemCurrent = Items.Find(findItem => findItem.Name == item.Name);
-                averagePrice = (item.Quantity * item.Price + itemCurrent.Quantity * itemCurrent.Price) / (item.Quantity + itemCurrent.Quantity);
-                itemCurrent.ChangingData(itemCurrent, item.Quantity, averagePrice);
+                averagePrice = Math.Round((item.Quantity * item.Price + itemCurrent.Quantity * itemCurrent.Price) / (item.Quantity + itemCurrent.Quantity), 2);
+                itemCurrent.ChangeQuantity(item.Quantity);
+                itemCurrent.ChangePrice(averagePrice);
             }
             else
             {
@@ -117,20 +118,14 @@ namespace EVL_HomeWork_31
             Price = price;
         }
 
-        public void ChangingData(Item item, int quantity, decimal averagePrice)
+        public void ChangeQuantity(int quantity)
         {
-            item.Quantity += quantity;
-            item.Price = Math.Round(averagePrice, 2);
+            Quantity += quantity;
         }
 
-        public void ChangingData(Item item, int quantity)
+        public void ChangePrice(decimal price)
         {
-            item.Quantity -= quantity;
-        }
-
-        public void ChangingData(Item item, decimal price)
-        {
-            item.Price = price;
+            Price = price;
         }
     }
 
@@ -199,7 +194,7 @@ namespace EVL_HomeWork_31
         public Item Sell(string nameItem, int quantityItem)
         {
             Item itemCurrent = Items.Find(findItem => findItem.Name == nameItem);
-            itemCurrent.ChangingData(itemCurrent, quantityItem);
+            itemCurrent.ChangeQuantity(-1 * quantityItem);
             Item item = new Item(nameItem, quantityItem, itemCurrent.Price);
 
             if (itemCurrent.Quantity == 0)
@@ -278,7 +273,7 @@ namespace EVL_HomeWork_31
                     else
                     {
                         Item buyItem = seller.Sell(name, quantity);
-                        buyItem.ChangingData(buyItem, price);
+                        buyItem.ChangePrice(price);
                         buyer.BuyItem(buyItem);
                         Console.Write("\nТовар продан покупателю");
                     }
