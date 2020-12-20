@@ -14,11 +14,11 @@ namespace EVL_HomeWork_33
             playingField.CreatingField();
             Console.CursorVisible = false;
 
-            Fighter soldier = new Fighter("Soldier", 200, 50, 25);
-            Fighter archer = new Fighter("Archer", 250, 25, 15);
-            Fighter lancer = new Fighter("Lancer", 150, 30, 20);
-            Fighter knight = new Fighter("Knight", 300, 35, 30);
-            Fighter robber = new Fighter("Robber", 100, 20, 25);
+            Soldier soldier = new Soldier("Soldier", 200, 50, 25, 1);
+            Archer archer = new Archer("Archer", 250, 25, 15, 2);
+            Lancer lancer = new Lancer("Lancer", 150, 30, 20, 2);
+            Knight knight = new Knight("Knight", 300, 35, 30, 3);
+            Robber robber = new Robber("Robber", 100, 20, 25, 4);
             Fighter[] fighters = { soldier, archer, lancer, knight, robber };
 
             playingField.ClearFieldStats();
@@ -27,29 +27,47 @@ namespace EVL_HomeWork_33
             playingField.SelectFighters(fighters);
             Console.CursorVisible = false;
 
+            Fighter firstFighter = fighters[playingField.FirstFighter - 1];
+            Fighter secondFighter = fighters[playingField.SecondFighter - 1];
 
+            Console.SetCursorPosition(50, 15);
+            firstFighter.ShowStats();
+            Console.SetCursorPosition(50, 16);
+            secondFighter.ShowStats();
 
-
-            Console.ReadKey();
+            while (firstFighter.Health > 0 && secondFighter.Health > 0)
+            {
+                Console.ReadKey();
+                firstFighter.MovePosition(firstFighter, secondFighter);
+                Console.ReadKey();
+            }
         }
     }
 
     class Fighter
     {
-        private string _name;
-        private int _health;
-        private int _damage;
-        private int _armor;
+        protected string _name;
+        protected int _health;
+        protected int _damage;
+        protected int _armor;
+        protected int _moving;
 
         public int PositionX { get; private set; }
         public int PositionY { get; private set; }
+        public int Health { get { return _health; } private set { } }
 
-        public Fighter(string name, int health, int damage, int armor)
+        public Fighter(string name, int health, int damage, int armor, int moving)
         {
             _name = name;
             _health = health;
             _damage = damage;
             _armor = armor;
+            _moving = moving;
+        }
+
+        virtual public void MovePosition(Fighter attackingPlayer, Fighter defendingPlayer)
+        {
+
         }
 
         public void TakePosition(int positionX, int positionY)
@@ -62,7 +80,65 @@ namespace EVL_HomeWork_33
 
         public void ShowStats()
         {
-            Console.WriteLine(_name + " HP - " + _health + " DMG " + _damage + " ARMOR " + _armor);
+            Console.WriteLine(_name + " HP - " + _health + " DMG " + _damage + " ARMOR " + _armor + " MOVING " + _moving);
+        }
+    }
+
+    class Soldier : Fighter
+    {
+        public Soldier(string name, int health, int damage, int armor, int moving) : base(name, health, damage, armor, moving)
+        {
+        }
+
+        public override void MovePosition(Fighter attackingPlayer, Fighter defendingPlayer)
+        {
+            Random random = new Random();
+            int direction;
+
+            if (Math.Abs(defendingPlayer.PositionX - attackingPlayer.PositionX) > 0 && Math.Abs(defendingPlayer.PositionY - attackingPlayer.PositionY) > 0)
+            {
+                direction = random.Next(0, 2);
+            }
+            else if (Math.Abs(defendingPlayer.PositionX - attackingPlayer.PositionX) > 0)
+            {
+                direction = 0;
+            }
+            else
+            {
+                direction = 1;
+            }
+
+            Console.SetCursorPosition(attackingPlayer.PositionX, attackingPlayer.PositionY);
+            Console.WriteLine(" ");
+            attackingPlayer.TakePosition(30, 17);
+        }
+    }
+
+    class Archer : Fighter
+    {
+        public Archer(string name, int health, int damage, int armor, int moving) : base(name, health, damage, armor, moving)
+        {
+        }
+    }
+
+    class Lancer : Fighter
+    {
+        public Lancer(string name, int health, int damage, int armor, int moving) : base(name, health, damage, armor, moving)
+        {
+        }
+    }
+
+    class Knight : Fighter
+    {
+        public Knight(string name, int health, int damage, int armor, int moving) : base(name, health, damage, armor, moving)
+        {
+        }
+    }
+
+    class Robber : Fighter
+    {
+        public Robber(string name, int health, int damage, int armor, int moving) : base(name, health, damage, armor, moving)
+        {
         }
     }
 
@@ -73,6 +149,23 @@ namespace EVL_HomeWork_33
         private int _fighterIndexOne = 0;
         private int _fighterIndexTwo = 0;
         private int _fieldSize = 10;
+
+        public int FirstFighter
+        {
+            get
+            {
+                return _fighterIndexOne;
+            }
+            private set { }
+        }
+        public int SecondFighter
+        {
+            get
+            {
+                return _fighterIndexTwo;
+            }
+            private set { }
+        }
 
         public void SelectFighters(Fighter[] fighters)
         {
@@ -85,7 +178,7 @@ namespace EVL_HomeWork_33
                 numericValue = Console.ReadLine();
                 if (int.TryParse(numericValue, out _fighterIndexOne))
                 {
-                    if (_fighterIndexOne <= 0 || _fighterIndexOne > 6)
+                    if (_fighterIndexOne <= 0 || _fighterIndexOne > 5)
                     {
                         ReportNumberError(fighters.Length, 1);
                     }
@@ -104,7 +197,7 @@ namespace EVL_HomeWork_33
                 numericValue = Console.ReadLine();
                 if (int.TryParse(numericValue, out _fighterIndexTwo))
                 {
-                    if (_fighterIndexTwo <= 0 || _fighterIndexTwo > 6)
+                    if (_fighterIndexTwo <= 0 || _fighterIndexTwo > 5)
                     {
                         ReportNumberError(fighters.Length, 2);
                     }
