@@ -38,8 +38,7 @@ namespace EVL_HomeWork_33
             while (firstFighter.Health > 0 && secondFighter.Health > 0)
             {
                 Console.ReadKey();
-                firstFighter.MovePosition(firstFighter, secondFighter);
-                Console.ReadKey();
+                firstFighter.MovePosition(firstFighter, secondFighter, playingField.СellWidth);
             }
         }
     }
@@ -55,6 +54,7 @@ namespace EVL_HomeWork_33
         public int PositionX { get; private set; }
         public int PositionY { get; private set; }
         public int Health { get { return _health; } private set { } }
+        public int Moving { get { return _moving; } private set { } }
 
         public Fighter(string name, int health, int damage, int armor, int moving)
         {
@@ -65,7 +65,7 @@ namespace EVL_HomeWork_33
             _moving = moving;
         }
 
-        virtual public void MovePosition(Fighter attackingPlayer, Fighter defendingPlayer)
+        virtual public void MovePosition(Fighter attackingPlayer, Fighter defendingPlayer, int cellWidth)
         {
 
         }
@@ -90,27 +90,83 @@ namespace EVL_HomeWork_33
         {
         }
 
-        public override void MovePosition(Fighter attackingPlayer, Fighter defendingPlayer)
+        public override void MovePosition(Fighter attackingPlayer, Fighter defendingPlayer, int cellWidth)
         {
             Random random = new Random();
-            int direction;
+            int directionX;
+            int directionY;
+            int positionX = attackingPlayer.PositionX;
+            int positionY = attackingPlayer.PositionY;
 
-            if (Math.Abs(defendingPlayer.PositionX - attackingPlayer.PositionX) > 0 && Math.Abs(defendingPlayer.PositionY - attackingPlayer.PositionY) > 0)
+            if (Math.Abs(defendingPlayer.PositionX - attackingPlayer.PositionX) / cellWidth >= 1 && Math.Abs(defendingPlayer.PositionY - attackingPlayer.PositionY) / (cellWidth / 2) >= 1)
             {
-                direction = random.Next(0, 2);
+                directionX = random.Next(0, attackingPlayer.Moving + 1);
+                if (directionX == 0)
+                {
+                    directionY = 1;
+                }
+                else
+                {
+                    directionY = 0;
+                }
+                if (attackingPlayer.PositionX > defendingPlayer.PositionX && attackingPlayer.PositionY > defendingPlayer.PositionY)
+                {
+                    positionX = attackingPlayer.PositionX - directionX * cellWidth;
+                    positionY = attackingPlayer.PositionY - directionY * cellWidth / 2;
+                }
+                if (attackingPlayer.PositionX < defendingPlayer.PositionX && attackingPlayer.PositionY < defendingPlayer.PositionY)
+                {
+                    positionX = attackingPlayer.PositionX + directionX * cellWidth;
+                    positionY = attackingPlayer.PositionY + directionY * cellWidth / 2;
+                }
+                if (attackingPlayer.PositionX > defendingPlayer.PositionX && attackingPlayer.PositionY < defendingPlayer.PositionY)
+                {
+                    positionX = attackingPlayer.PositionX - directionX * cellWidth;
+                    positionY = attackingPlayer.PositionY + directionY * cellWidth / 2;
+                }
+                if (attackingPlayer.PositionX < defendingPlayer.PositionX && attackingPlayer.PositionY > defendingPlayer.PositionY)
+                {
+                    positionX = attackingPlayer.PositionX + directionX * cellWidth;
+                    positionY = attackingPlayer.PositionY - directionY * cellWidth / 2;
+                }
             }
-            else if (Math.Abs(defendingPlayer.PositionX - attackingPlayer.PositionX) > 0)
+            else if (Math.Abs(defendingPlayer.PositionX - attackingPlayer.PositionX) / cellWidth >= 1 && Math.Abs(defendingPlayer.PositionY - attackingPlayer.PositionY) == 0)
             {
-                direction = 0;
+                directionX = 1;
+                if (attackingPlayer.PositionX > defendingPlayer.PositionX && (Math.Abs(defendingPlayer.PositionX - attackingPlayer.PositionX) / cellWidth != attackingPlayer.Moving))
+                {
+                    positionX = attackingPlayer.PositionX - directionX * cellWidth;
+                    positionY = attackingPlayer.PositionY;
+                }
+                if (attackingPlayer.PositionX < defendingPlayer.PositionX && (Math.Abs(defendingPlayer.PositionX - attackingPlayer.PositionX) / cellWidth != attackingPlayer.Moving))
+                {
+                    positionX = attackingPlayer.PositionX + directionX * cellWidth;
+                    positionY = attackingPlayer.PositionY;
+                }
+            }
+            else if (Math.Abs(defendingPlayer.PositionY - attackingPlayer.PositionY) / (cellWidth / 2) >= 1 && Math.Abs(defendingPlayer.PositionX - attackingPlayer.PositionX) == 0)
+            {
+                directionY = 1;
+                if (attackingPlayer.PositionY > defendingPlayer.PositionY && (Math.Abs(defendingPlayer.PositionY - attackingPlayer.PositionY) / (cellWidth / 2) != attackingPlayer.Moving))
+                {
+                    positionX = attackingPlayer.PositionX;
+                    positionY = attackingPlayer.PositionY - directionY * cellWidth / 2;
+                }
+                if (attackingPlayer.PositionY < defendingPlayer.PositionY && (Math.Abs(defendingPlayer.PositionY - attackingPlayer.PositionY) / (cellWidth / 2) != attackingPlayer.Moving))
+                {
+                    positionX = attackingPlayer.PositionX;
+                    positionY = attackingPlayer.PositionY + directionY * cellWidth / 2;
+                }
             }
             else
             {
-                direction = 1;
+                positionX = attackingPlayer.PositionX;
+                positionY = attackingPlayer.PositionY;
             }
 
             Console.SetCursorPosition(attackingPlayer.PositionX, attackingPlayer.PositionY);
             Console.WriteLine(" ");
-            attackingPlayer.TakePosition(30, 17);
+            attackingPlayer.TakePosition(positionX, positionY);
         }
     }
 
@@ -149,6 +205,17 @@ namespace EVL_HomeWork_33
         private int _fighterIndexOne = 0;
         private int _fighterIndexTwo = 0;
         private int _fieldSize = 10;
+
+        public int СellWidth
+        {
+            get
+            {
+                return 4;
+            }
+            private set
+            {
+            }
+        }
 
         public int FirstFighter
         {
