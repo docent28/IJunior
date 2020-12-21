@@ -98,7 +98,8 @@ namespace EVL_HomeWork_33
             int positionX = attackingPlayer.PositionX;
             int positionY = attackingPlayer.PositionY;
 
-            if (Math.Abs(defendingPlayer.PositionX - attackingPlayer.PositionX) / cellWidth >= 1 && Math.Abs(defendingPlayer.PositionY - attackingPlayer.PositionY) / (cellWidth / 2) >= 1)
+            if (Math.Abs(defendingPlayer.PositionX - attackingPlayer.PositionX) / cellWidth >= attackingPlayer.Moving &&
+                Math.Abs(defendingPlayer.PositionY - attackingPlayer.PositionY) / (cellWidth / 2) >= attackingPlayer.Moving)
             {
                 directionX = random.Next(0, attackingPlayer.Moving + 1);
                 if (directionX == 0)
@@ -130,29 +131,35 @@ namespace EVL_HomeWork_33
                     positionY = attackingPlayer.PositionY - directionY * cellWidth / 2;
                 }
             }
-            else if (Math.Abs(defendingPlayer.PositionX - attackingPlayer.PositionX) / cellWidth >= 1 && Math.Abs(defendingPlayer.PositionY - attackingPlayer.PositionY) == 0)
+            else if (Math.Abs(defendingPlayer.PositionX - attackingPlayer.PositionX) / cellWidth >= attackingPlayer.Moving &&
+                Math.Abs(defendingPlayer.PositionY - attackingPlayer.PositionY) == 0)
             {
                 directionX = 1;
-                if (attackingPlayer.PositionX > defendingPlayer.PositionX && (Math.Abs(defendingPlayer.PositionX - attackingPlayer.PositionX) / cellWidth != attackingPlayer.Moving))
+                if (attackingPlayer.PositionX > defendingPlayer.PositionX && 
+                    (Math.Abs(defendingPlayer.PositionX - attackingPlayer.PositionX) / cellWidth != attackingPlayer.Moving))
                 {
                     positionX = attackingPlayer.PositionX - directionX * cellWidth;
                     positionY = attackingPlayer.PositionY;
                 }
-                if (attackingPlayer.PositionX < defendingPlayer.PositionX && (Math.Abs(defendingPlayer.PositionX - attackingPlayer.PositionX) / cellWidth != attackingPlayer.Moving))
+                if (attackingPlayer.PositionX < defendingPlayer.PositionX && 
+                    (Math.Abs(defendingPlayer.PositionX - attackingPlayer.PositionX) / cellWidth != attackingPlayer.Moving))
                 {
                     positionX = attackingPlayer.PositionX + directionX * cellWidth;
                     positionY = attackingPlayer.PositionY;
                 }
             }
-            else if (Math.Abs(defendingPlayer.PositionY - attackingPlayer.PositionY) / (cellWidth / 2) >= 1 && Math.Abs(defendingPlayer.PositionX - attackingPlayer.PositionX) == 0)
+            else if (Math.Abs(defendingPlayer.PositionY - attackingPlayer.PositionY) / (cellWidth / 2) >= attackingPlayer.Moving && 
+                Math.Abs(defendingPlayer.PositionX - attackingPlayer.PositionX) == 0)
             {
                 directionY = 1;
-                if (attackingPlayer.PositionY > defendingPlayer.PositionY && (Math.Abs(defendingPlayer.PositionY - attackingPlayer.PositionY) / (cellWidth / 2) != attackingPlayer.Moving))
+                if (attackingPlayer.PositionY > defendingPlayer.PositionY && 
+                    (Math.Abs(defendingPlayer.PositionY - attackingPlayer.PositionY) / (cellWidth / 2) != attackingPlayer.Moving))
                 {
                     positionX = attackingPlayer.PositionX;
                     positionY = attackingPlayer.PositionY - directionY * cellWidth / 2;
                 }
-                if (attackingPlayer.PositionY < defendingPlayer.PositionY && (Math.Abs(defendingPlayer.PositionY - attackingPlayer.PositionY) / (cellWidth / 2) != attackingPlayer.Moving))
+                if (attackingPlayer.PositionY < defendingPlayer.PositionY && 
+                    (Math.Abs(defendingPlayer.PositionY - attackingPlayer.PositionY) / (cellWidth / 2) != attackingPlayer.Moving))
                 {
                     positionX = attackingPlayer.PositionX;
                     positionY = attackingPlayer.PositionY + directionY * cellWidth / 2;
