@@ -14,8 +14,8 @@ namespace EVL_HomeWork_33
             playingField.CreatingField();
             Console.CursorVisible = false;
 
-            Soldier soldier = new Soldier("Soldier", 200, 50, 25, 1);
-            Archer archer = new Archer("Archer", 250, 25, 15, 4);
+            Soldier soldier = new Soldier("Soldier", 200, 50, 25, 2);
+            Archer archer = new Archer("Archer", 250, 25, 15, 3);
             Lancer lancer = new Lancer("Lancer", 150, 30, 20, 3);
             Knight knight = new Knight("Knight", 300, 35, 30, 2);
             Robber robber = new Robber("Robber", 100, 20, 25, 4);
@@ -35,15 +35,15 @@ namespace EVL_HomeWork_33
             Console.SetCursorPosition(50, 16);
             secondFighter.ShowStats();
 
-            firstFighter.TakePosition(18, 5);
-            secondFighter.TakePosition(6, 5);
+            firstFighter.TakePosition(34, 17);
+            secondFighter.TakePosition(34, 3);
 
             while (firstFighter.Health > 0 && secondFighter.Health > 0)
             {
                 Console.ReadKey();
-                firstFighter.MovePosition(firstFighter, secondFighter, playingField.СellWidth);
+                firstFighter.MovePosition(secondFighter, playingField.СellWidth);
                 Console.ReadKey();
-                secondFighter.MovePosition(secondFighter, firstFighter, playingField.СellWidth);
+                secondFighter.MovePosition(firstFighter, playingField.СellWidth);
             }
         }
     }
@@ -70,172 +70,97 @@ namespace EVL_HomeWork_33
             _moving = moving;
         }
 
-        public void MovePosition(Fighter attackingPlayer, Fighter defendingPlayer, int cellWidth)
+        public void MovePosition(Fighter defendingPlayer, int cellWidth)
         {
             Random random = new Random();
             int directionX;
             int directionY;
-            int positionX = attackingPlayer.PositionX;
-            int positionY = attackingPlayer.PositionY;
+            int positionX = this.PositionX;
+            int positionY = this.PositionY;
+            int distanceX = Math.Abs(defendingPlayer.PositionX - this.PositionX) / cellWidth;
+            int distanceY = Math.Abs(defendingPlayer.PositionY - this.PositionY) / (cellWidth / 2);
 
-            if (Math.Abs(defendingPlayer.PositionX - attackingPlayer.PositionX) / cellWidth >= attackingPlayer.Moving &&
-                Math.Abs(defendingPlayer.PositionY - attackingPlayer.PositionY) / (cellWidth / 2) >= attackingPlayer.Moving)
+            if (distanceX > this.Moving && distanceY > this.Moving)               // если и по X и по Y дистанция больше разового перемещения
             {
                 directionX = random.Next(0, 2);
-                if (directionX == 0)
+                if (directionX == 0) { directionY = 1; } else { directionY = 0; }
+                if (this.PositionX > defendingPlayer.PositionX && directionX == 1)
                 {
-                    directionY = 1;
+                    directionX = -1;
                 }
-                else
+                if (this.PositionY > defendingPlayer.PositionY && directionY == 1)
                 {
-                    directionY = 0;
+                    directionY = -1;
                 }
-                if (attackingPlayer.PositionX > defendingPlayer.PositionX && attackingPlayer.PositionY > defendingPlayer.PositionY)
-                {
-                    positionX = attackingPlayer.PositionX - directionX * attackingPlayer.Moving * cellWidth;
-                    positionY = attackingPlayer.PositionY - directionY * attackingPlayer.Moving * cellWidth / 2;
-                }
-                if (attackingPlayer.PositionX < defendingPlayer.PositionX && attackingPlayer.PositionY < defendingPlayer.PositionY)
-                {
-                    positionX = attackingPlayer.PositionX + directionX * attackingPlayer.Moving * cellWidth;
-                    positionY = attackingPlayer.PositionY + directionY * attackingPlayer.Moving * cellWidth / 2;
-                }
-                if (attackingPlayer.PositionX > defendingPlayer.PositionX && attackingPlayer.PositionY < defendingPlayer.PositionY)
-                {
-                    positionX = attackingPlayer.PositionX - directionX * attackingPlayer.Moving * cellWidth;
-                    positionY = attackingPlayer.PositionY + directionY * attackingPlayer.Moving * cellWidth / 2;
-                }
-                if (attackingPlayer.PositionX < defendingPlayer.PositionX && attackingPlayer.PositionY > defendingPlayer.PositionY)
-                {
-                    positionX = attackingPlayer.PositionX + directionX * attackingPlayer.Moving * cellWidth;
-                    positionY = attackingPlayer.PositionY - directionY * attackingPlayer.Moving * cellWidth / 2;
-                }
+                positionX = this.PositionX + directionX * this.Moving * cellWidth;
+                positionY = this.PositionY + directionY * this.Moving * (cellWidth / 2);
             }
-            else if (Math.Abs(defendingPlayer.PositionX - attackingPlayer.PositionX) / cellWidth >= attackingPlayer.Moving &&
-                Math.Abs(defendingPlayer.PositionY - attackingPlayer.PositionY) == 0)
+            else if (distanceX < this.Moving && distanceY < this.Moving)          // если и по X и по Y дистанция меньше разового перемещения
             {
-                directionX = 1;
-                if (attackingPlayer.PositionX > defendingPlayer.PositionX &&
-                    (Math.Abs(defendingPlayer.PositionX - attackingPlayer.PositionX) / cellWidth != attackingPlayer.Moving))
-                {
-                    positionX = attackingPlayer.PositionX - directionX * attackingPlayer.Moving * cellWidth;
-                    if (Math.Abs(positionX - defendingPlayer.PositionX) / cellWidth < attackingPlayer.Moving)
-                    {
-                        positionX = defendingPlayer.PositionX + attackingPlayer.Moving * cellWidth;
-                    }
-                    positionY = attackingPlayer.PositionY;
-                }
-                if (attackingPlayer.PositionX < defendingPlayer.PositionX &&
-                    (Math.Abs(defendingPlayer.PositionX - attackingPlayer.PositionX) / cellWidth != attackingPlayer.Moving))
-                {
-                    positionX = attackingPlayer.PositionX + directionX * attackingPlayer.Moving * cellWidth;
-                    if (Math.Abs(positionX - defendingPlayer.PositionX) / cellWidth < attackingPlayer.Moving)
-                    {
-                        positionX = defendingPlayer.PositionX - attackingPlayer.Moving * cellWidth;
-                    }
-                    positionY = attackingPlayer.PositionY;
-                }
+
             }
-            else if (Math.Abs(defendingPlayer.PositionY - attackingPlayer.PositionY) / (cellWidth / 2) >= attackingPlayer.Moving &&
-                Math.Abs(defendingPlayer.PositionX - attackingPlayer.PositionX) == 0)
+            else if (distanceX == this.Moving && distanceY == this.Moving)        // если и по X и по Y дистанция равна разовому перемещению
             {
-                directionY = 1;
-                if (attackingPlayer.PositionY > defendingPlayer.PositionY &&
-                    (Math.Abs(defendingPlayer.PositionY - attackingPlayer.PositionY) / (cellWidth / 2) != attackingPlayer.Moving))
+
+            }
+            else if (distanceX == 0)                    // если по X дистанция равна 0
+            {
+                if (this.PositionY > defendingPlayer.PositionY &&
+                    (Math.Abs(defendingPlayer.PositionY - this.PositionY) / (cellWidth / 2) != this.Moving))
                 {
-                    positionX = attackingPlayer.PositionX;
-                    positionY = attackingPlayer.PositionY - directionY * attackingPlayer.Moving * cellWidth / 2;
-                    if (Math.Abs(positionY - defendingPlayer.PositionY) / (cellWidth / 2) < attackingPlayer.Moving)
+                    positionX = this.PositionX;
+                    positionY = this.PositionY - this.Moving * cellWidth / 2;
+                    if (Math.Abs(positionY - defendingPlayer.PositionY) / (cellWidth / 2) < this.Moving)
                     {
-                        positionY = defendingPlayer.PositionY + attackingPlayer.Moving * (cellWidth / 2);
+                        positionY = defendingPlayer.PositionY + this.Moving * (cellWidth / 2);
                     }
                 }
-                if (attackingPlayer.PositionY < defendingPlayer.PositionY &&
-                    (Math.Abs(defendingPlayer.PositionY - attackingPlayer.PositionY) / (cellWidth / 2) != attackingPlayer.Moving))
+                if (this.PositionY < defendingPlayer.PositionY &&
+                    (Math.Abs(defendingPlayer.PositionY - this.PositionY) / (cellWidth / 2) != this.Moving))
                 {
-                    positionX = attackingPlayer.PositionX;
-                    positionY = attackingPlayer.PositionY + directionY * attackingPlayer.Moving * cellWidth / 2;
-                    if (Math.Abs(positionY - defendingPlayer.PositionY) / (cellWidth / 2) < attackingPlayer.Moving)
+                    positionX = this.PositionX;
+                    positionY = this.PositionY + this.Moving * cellWidth / 2;
+                    if (Math.Abs(positionY - defendingPlayer.PositionY) / (cellWidth / 2) < this.Moving)
                     {
-                        positionY = defendingPlayer.PositionY - attackingPlayer.Moving * (cellWidth / 2);
+                        positionY = defendingPlayer.PositionY - this.Moving * (cellWidth / 2);
                     }
                 }
             }
-            else if (Math.Abs(defendingPlayer.PositionX - attackingPlayer.PositionX) / cellWidth < attackingPlayer.Moving)
+            else if (distanceY == 0)                    // если по Y дистанция равна 0
             {
-                if (Math.Abs(defendingPlayer.PositionX - attackingPlayer.PositionX) / cellWidth == 1 &&
-                    Math.Abs(defendingPlayer.PositionY - attackingPlayer.PositionY) / (cellWidth / 2) == 1)
+                if (this.PositionX > defendingPlayer.PositionX &&
+                    (Math.Abs(defendingPlayer.PositionX - this.PositionX) / cellWidth != this.Moving))
                 {
-                    directionX = random.Next(0, 2);
-                    if (directionX == 0)
+                    positionY = this.PositionY;
+                    positionX = this.PositionX - this.Moving * cellWidth;
+                    if (Math.Abs(positionX - defendingPlayer.PositionX) / cellWidth < this.Moving)
                     {
-                        if (Math.Abs(attackingPlayer.PositionY - 19) > Math.Abs(attackingPlayer.PositionY - 1))
-                        {
-                            positionY = attackingPlayer.PositionY + attackingPlayer.Moving * (cellWidth / 2);
-                        }
-                        else
-                        {
-                            positionY = attackingPlayer.PositionY - attackingPlayer.Moving * (cellWidth / 2);
-                        }
-                    }
-                    else
-                    {
-                        if (Math.Abs(attackingPlayer.PositionX - 38) > Math.Abs(attackingPlayer.PositionX - 2))
-                        {
-                            positionX = attackingPlayer.PositionX + attackingPlayer.Moving * cellWidth;
-                        }
-                        else
-                        {
-                            positionX = attackingPlayer.PositionX - attackingPlayer.Moving * cellWidth;
-                        }
+                        positionX = defendingPlayer.PositionX + this.Moving * cellWidth;
                     }
                 }
-                else if ((Math.Abs(defendingPlayer.PositionX - attackingPlayer.PositionX) / cellWidth == 1 &&
-                    Math.Abs(defendingPlayer.PositionY - attackingPlayer.PositionY) / (cellWidth / 2) == 0) ||
-                    (Math.Abs(defendingPlayer.PositionX - attackingPlayer.PositionX) / cellWidth == 0 &&
-                    Math.Abs(defendingPlayer.PositionY - attackingPlayer.PositionY) / (cellWidth / 2) == 1))
+                if (this.PositionX < defendingPlayer.PositionX &&
+                    (Math.Abs(defendingPlayer.PositionX - this.PositionX) / cellWidth != this.Moving))
                 {
-                    if (attackingPlayer.PositionX == defendingPlayer.PositionX)
+                    positionY = this.PositionY;
+                    positionX = this.PositionX + this.Moving * cellWidth;
+                    if (Math.Abs(positionX - defendingPlayer.PositionX) / cellWidth < this.Moving)
                     {
-                        if (Math.Abs(attackingPlayer.PositionX - 38) > Math.Abs(attackingPlayer.PositionX - 2))
-                        {
-                            positionX = attackingPlayer.PositionX + attackingPlayer.Moving * cellWidth;
-                        }
-                        else
-                        {
-                            positionX = attackingPlayer.PositionX - attackingPlayer.Moving * cellWidth;
-                        }
+                        positionX = defendingPlayer.PositionX - this.Moving * cellWidth;
                     }
-                    else
-                    {
-                        if (Math.Abs(attackingPlayer.PositionY - 19) > Math.Abs(attackingPlayer.PositionY - 1))
-                        {
-                            positionY = attackingPlayer.PositionY + attackingPlayer.Moving * (cellWidth / 2);
-                        }
-                        else
-                        {
-                            positionY = attackingPlayer.PositionY - attackingPlayer.Moving * (cellWidth / 2);
-                        }
-                    }
-                }
-                else
-                {
-                    positionX = defendingPlayer.PositionX;
                 }
             }
-            else if (Math.Abs(defendingPlayer.PositionY - attackingPlayer.PositionY) / (cellWidth / 2) < attackingPlayer.Moving)
+            else if (distanceX < this.Moving)          // если по X дистанция меньше разового перемещения
             {
-                positionY = defendingPlayer.PositionY;
+
             }
-            else
+            else if (distanceY < this.Moving)          // если по Y дистанция меньше разового перемещения
             {
-                positionX = attackingPlayer.PositionX;
-                positionY = attackingPlayer.PositionY;
+
             }
 
-            Console.SetCursorPosition(attackingPlayer.PositionX, attackingPlayer.PositionY);
+            Console.SetCursorPosition(this.PositionX, this.PositionY);
             Console.WriteLine(" ");
-            attackingPlayer.TakePosition(positionX, positionY);
+            this.TakePosition(positionX, positionY);
         }
 
         public void TakePosition(int positionX, int positionY)
@@ -731,7 +656,7 @@ namespace EVL_HomeWork_33
 
             positionXFirst = positionsX[random.Next(0, _fieldSize)];
             positionYFirst = positionsY[random.Next(0, _fieldSize)];
-            firstFighter.TakePosition(positionXFirst, positionYFirst);
+            //            firstFighter.TakePosition(positionXFirst, positionYFirst);
 
             positionXSecond = positionXFirst;
             while (positionXFirst == positionXSecond)
@@ -743,7 +668,7 @@ namespace EVL_HomeWork_33
             {
                 positionYSecond = positionsY[random.Next(0, _fieldSize)];
             }
-            secondFighter.TakePosition(positionXSecond, positionYSecond);
+            //            secondFighter.TakePosition(positionXSecond, positionYSecond);
         }
 
         private void ReportSelectionError(int fightersLength, int downwardOffset)
